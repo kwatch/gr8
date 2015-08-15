@@ -166,6 +166,11 @@ Oktest.scope do
         ok {arr.paths{|x| x.exist?}} == [false, false, false]
       end
 
+      spec "[!4kppy] self is Patname object in block argument." do
+        arr = ["A.txt", "B.txt", "C.txt"]
+        ok {arr.paths{self.is_a?(Pathname)}}.all? {|x| x == true }
+      end
+
     end
 
 

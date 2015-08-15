@@ -127,12 +127,13 @@ module Enumerable
     end
   end
 
-  def paths
+  def paths(&block)
     #; [!t55ce] collects Pathname objects when block argument is not passed.
     #; [!yjkm5] yields Pathname objects when block argument is passed.
+    #; [!4kppy] self is Patname object in block argument.
     require "pathname" unless defined?(Pathname)
     if block_given?
-      collect {|s| yield Pathname(s) }
+      collect {|s| x = Pathname(s); x.instance_exec(x, &block) }
     else
       collect {|s| Pathname(s) }
     end
