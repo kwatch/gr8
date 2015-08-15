@@ -218,7 +218,9 @@ Example:
   100
   80
   120
-  $ cat data | %{script}s 'map{|s|s.split()[1]}.map(&:to_i).inject(0,:+)'
+  $ cat data | %{script}s 'map{split()[1].to_i}.sum'
+  300
+  $ cat data | %{script}s 'map{split[1]}.sum_i'
   300
 
 See https://github.com/kwatch/gr8 for details.
