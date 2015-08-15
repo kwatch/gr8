@@ -54,9 +54,10 @@ module Enumerable
   end
   alias xf transform
 
+  alias __map map
   def map(&block)
     #; [!zfmcx] each item is available as self in block of map().
-    collect {|x| x.instance_exec(x, &block) }
+    __map {|x| x.instance_exec(x, &block) }
   end
 
   alias __select select
@@ -220,9 +221,10 @@ end
 
 class Enumerator::Lazy
 
+  alias __map map
   def map(&block)
     #; [!drgky] each item is available as self in block of map().
-    collect {|x| x.instance_exec(x, &block) }
+    __map {|x| x.instance_exec(x, &block) }
   end
 
   alias __select select
