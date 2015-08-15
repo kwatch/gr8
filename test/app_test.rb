@@ -66,6 +66,15 @@ END
         ok {status} == 0
       end
 
+      spec "[!1s7wm] requires libraries when '-r' or '--require' specified." do
+        |app|
+        ok {defined?(PStore)}     == nil
+        ok {defined?(GetoptLong)} == nil
+        dummy_io { app.run("-r pstore,getoptlong", "map{|s| s}") }
+        ok {defined?(PStore)}     == "constant"
+        ok {defined?(GetoptLong)} == "constant"
+      end
+
       spec "[!7wqyh] prints error when no argument." do
         |app|
         status = nil

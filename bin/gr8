@@ -249,6 +249,7 @@ Usage:
 Options:
   -h, --help             : print help
   -v, --version          : print version
+  -r, --require=lib[,lib2,...]  : require libraries
 
 Example:
   $ cat data
@@ -355,6 +356,7 @@ END
       parser = OptionParser.new
       parser.on("-h", "--help")    {|v| opts[:help]    = true }
       parser.on("-v", "--version") {|v| opts[:version] = true }
+      parser.on("-r", "--require=libname") {|v| opts[:require] = v }
       parser.parse!(args)
       return opts
     end
@@ -367,6 +369,13 @@ END
       #; [!2tfh5] prints version string when '-v' or '--version' specified.
       if opts[:version]
         return VERSION
+      end
+      #; [!1s7wm] requires libraries when '-r' or '--require' specified.
+      if opts[:require]
+        opts[:require].split(/,/).each do |libname|
+          libname.strip!
+          require libname
+        end
       end
       nil
     end
