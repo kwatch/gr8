@@ -208,6 +208,37 @@ See https://github.com/kwatch/gr8 for details.
 END
 
 
+  module Util
+
+    module_function
+
+    def define_singleton_methods_on(stdin)
+      (class << stdin; self; end).class_eval do
+        #; [!zcxh1] removes '\n' from each line automatically.
+        alias __each_orig each
+        def each
+          __each_orig {|s| s.chomp!; yield s }
+        end
+        alias __each_new each
+        #; [!i7npb] $1, $2, ... are available in grep() block argument.
+        #; [!vkt64] lines are chomped automatically in grep() if block is not given.
+        def grep(pattern, &block)
+          if pattern.is_a?(Regexp) && block
+            (class << self; self; end).class_eval { alias each __each_orig }
+          end
+          super(pattern, &block)
+        end
+        #; [!zfmcx] each item is available as self in block of map().
+        alias __map map
+        def map(&block)
+          __map {|x| x.instance_exec(x, &block) }
+        end
+      end
+    end
+
+  end
+
+
   class App
 
     def run(*args)
@@ -233,7 +264,7 @@ END
       #; [!r69d6] executes ruby code with $stdin.lazy as self.
       code = args[0]
       $IN = $stdin.lazy
-      define_singleton_methods_on($IN)
+      Util.define_singleton_methods_on($IN)
       filename = "<#{script_name()}>"
       val = $IN.instance_eval(code, filename)
       #; [!hsvnd] prints nothing when result is nil.
@@ -294,30 +325,6 @@ END
         return "too many arguments."
       end
       nil
-    end
-
-    def define_singleton_methods_on(stdin)
-      (class << stdin; self; end).class_eval do
-        #; [!zcxh1] removes '\n' from each line automatically.
-        alias __each_orig each
-        def each
-          __each_orig {|s| s.chomp!; yield s }
-        end
-        alias __each_new each
-        #; [!i7npb] $1, $2, ... are available in grep() block argument.
-        #; [!vkt64] lines are chomped automatically in grep() if block is not given.
-        def grep(pattern, &block)
-          if pattern.is_a?(Regexp) && block
-            (class << self; self; end).class_eval { alias each __each_orig }
-          end
-          super(pattern, &block)
-        end
-        #; [!zfmcx] each item is available as self in block of map().
-        alias __map map
-        def map(&block)
-          __map {|x| x.instance_exec(x, &block) }
-        end
-      end
     end
 
   end

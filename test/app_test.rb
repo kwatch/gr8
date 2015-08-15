@@ -115,55 +115,6 @@ END
         ok {sout} == "true\n"
       end
 
-      spec "[!zcxh1] removes '\n' from each line automatically." do
-        |app, input_data|
-        expected = <<'END'
-"Haruhi  100"
-"Mikuru   80"
-"Yuki    120"
-END
-        code = "map{|s| s.inspect }"
-        sout, _ = dummy_io(input_data) { app.run(code) }
-        ok {sout} == expected
-      end
-
-      spec "[!i7npb] $1, $2, ... are available in grep() block argument." do
-        |app, input_data|
-        code = 'grep(/^(\w+)\s+(\d+)$/){$1}'
-        sout, _ = dummy_io(input_data) { app.run(code) }
-        ok {sout} == "Haruhi\nMikuru\nYuki\n"
-        #
-        code = 'grep(/^(\w+)\s+(\d+)$/){$2.to_i}.inject(0,:+)'
-        sout, _ = dummy_io(input_data) { app.run(code) }
-        ok {sout} == "300\n"
-      end
-
-      spec "[!vkt64] lines are chomped automatically in grep() if block is not given." do
-        |app, input_data|
-        code = 'grep(/\d+/).map{|s| s.inspect}'
-        sout, _ = dummy_io(input_data) { app.run(code) }
-        ok {sout} == <<'END'
-"Haruhi  100"
-"Mikuru   80"
-"Yuki    120"
-END
-      end
-
-      spec "[!zfmcx] each item is available as self in block of map()." do
-        |app, input_data|
-        code = 'map{self.inspect}'
-        sout, _ = dummy_io(input_data) { app.run(code) }
-        ok {sout} == <<'END'
-"Haruhi  100"
-"Mikuru   80"
-"Yuki    120"
-END
-        #
-        code = 'map{split[1]}'
-        sout, _ = dummy_io(input_data) { app.run(code) }
-        ok {sout} == "100\n80\n120\n"
-      end
-
       spec "[!hsvnd] prints nothing when result is nil." do
         |app, input_data|
         sout, serr = dummy_io(input_data) { app.run("nil") }
