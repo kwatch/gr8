@@ -52,15 +52,13 @@ END
         $stderr.puts "#ERROR (#{script_name()}): #{ex}"
         return 1
       end
-      #; [!33bj3] prints help message when '-h' or '--help' specified.
-      #; [!2tfh5] prints version string when '-v' or '--version' specified.
+      #
       output = handle_opts(opts)
       if output
         puts output
         return 0
       end
-      #; [!7wqyh] prints error when no argument.
-      #; [!bwiqv] prints error when too many argument.
+      #
       errmsg = validate_args(args)
       if errmsg
         $stderr.puts "ERROR (#{script_name()}): #{errmsg}"
@@ -110,9 +108,11 @@ END
     end
 
     def handle_opts(opts)
+      #; [!33bj3] prints help message when '-h' or '--help' specified.
       if opts[:help]
         return HELP % {script: script_name()}
       end
+      #; [!2tfh5] prints version string when '-v' or '--version' specified.
       if opts[:version]
         return VERSION
       end
@@ -120,6 +120,8 @@ END
     end
 
     def validate_args(args)
+      #; [!7wqyh] prints error when no argument.
+      #; [!bwiqv] prints error when too many argument.
       if args.length == 0
         return "argument required."
       elsif args.length > 1
