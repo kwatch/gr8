@@ -107,6 +107,34 @@ END
         ok {sout} == "true\n"
       end
 
+      spec "[!vnwu6] option '-C': select colum." do
+        |app, input_data|
+        code = "map{|s| s.inspect }"
+        sout, serr = dummy_io(input_data) { app.run("-C2", code) }
+        ok {sout} == %Q`"100"\n"80"\n"120"\n`
+        ok {serr} == ""
+      end
+
+      spec "[!7ruq0] option -C: argument should be an integer." do
+        |app, input_data|
+        code = "map{|s| s.inspect }"
+        status = nil
+        sout, serr = dummy_io(input_data) { status = app.run("-Cx", code) }
+        ok {sout} == ""
+        ok {serr} == "#ERROR (gr8): integer expected: -Cx\n"
+        ok {status} == 1
+      end
+
+      spec "[!6x3dp] option -C: argument should be >= 1." do
+        |app, input_data|
+        code = "map{|s| s.inspect }"
+        status = nil
+        sout, serr = dummy_io(input_data) { status = app.run("-C0", code) }
+        ok {sout} == ""
+        ok {serr} == "#ERROR (gr8): column number should be >= 1: -C0\n"
+        ok {status} == 1
+      end
+
       spec "[!hsvnd] prints nothing when result is nil." do
         |app, input_data|
         sout, serr = dummy_io(input_data) { app.run("nil") }

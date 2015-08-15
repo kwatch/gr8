@@ -250,6 +250,7 @@ Options:
   -h, --help             : print help
   -v, --version          : print version
   -r, --require=lib[,lib2,...]  : require libraries
+  -C N                   : select column (1-origin)
 
 Example:
   $ cat data
@@ -263,6 +264,8 @@ Example:
   $ cat data | %{script}s 'map{split()[1].to_i}.sum'
   300
   $ cat data | %{script}s 'map{split[1]}.sum_i'
+  300
+  $ cat data | %{script}s -C2 'sum_i'
   300
 
 See https://github.com/kwatch/gr8 for details.
@@ -344,9 +347,13 @@ END
         $stderr.puts "ERROR (#{script_name()}): #{errmsg}"
         return 1
       end
-      #
-      $IN = $stdin.lazy
-      Util.define_singleton_methods_on($IN)
+      #; [!vnwu6] if option '-C' specified, select colum.
+      if opts[:column]
+        $IN = EnumWrapper.new($stdin.lazy, nil, opts[:column])
+      else
+        $IN = $stdin.lazy
+        Util.define_singleton_methods_on($IN)
+      end
       #; [!r69d6] executes ruby code with $stdin.lazy as self.
       code = args[0]
       filename = "<#{script_name()}>"
@@ -385,8 +392,27 @@ END
       parser.on("-h", "--help")    {|v| opts[:help]    = true }
       parser.on("-v", "--version") {|v| opts[:version] = true }
       parser.on("-r", "--require=libname") {|v| opts[:require] = v }
+      #parser.on("-C N", Integer) {|v| opts[:column] = v }
+      parser.on("-C N") do |v|
+        #; [!7ruq0] option '-C': argument should be an integer.
+        #; [!6x3dp] option '-C': argument should be >= 1.
+        begin
+          opts[:column] = Integer(v)
+        rescue ArgumentError => ex
+          raise invalid_argument_error(v, "integer expected")
+        end
+        if opts[:column] <= 0
+          raise invalid_argument_error(v, "column number should be >= 1")
+        end
+      end
       parser.parse!(args)
       return opts
+    end
+
+    def invalid_argument_error(optarg, reason)
+      err = OptionParser::InvalidArgument.new(optarg)
+      err.reason = reason
+      err
     end
 
     def handle_opts(opts)
