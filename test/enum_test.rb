@@ -29,6 +29,16 @@ Oktest.scope do
     end
 
 
+    topic '#map()' do
+
+      spec "[!zfmcx] each item is available as self in block of map()." do
+        ok { (1..3).map {|i| i * 10}  } == [10, 20, 30]
+        ok { (1..3).map {|i| self*10} } == [10, 20, 30]
+      end
+
+    end
+
+
     topic '#sum()' do
 
       spec "[!9izc1] returns sum of numbers." do
