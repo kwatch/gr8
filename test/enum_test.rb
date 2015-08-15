@@ -6,11 +6,8 @@
 ### $License: MIT License $
 ###
 
-$: << File.dirname(__FILE__)
-
+require_relative "common"
 require "oktest"
-
-load File.class_eval { join(dirname(dirname(__FILE__)), "bin", "gr8") }
 
 
 Oktest.scope do
