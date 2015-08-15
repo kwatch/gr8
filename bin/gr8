@@ -12,6 +12,23 @@
 require "optparse"
 
 
+class String
+
+  def q
+    #; [!ejo5y] quotes string with single-quoation.
+    #; [!ageyj] escapes single-quotation characters.
+    "'%s'" % self.gsub(/'/) { "\\'" }
+  end
+
+  def qq
+    #; [!wwvll] quotes string with double-quotation.
+    #; [!rc66j] escapes double-quotation characters.
+    '"%s"' % self.gsub(/"/) { '\\"' }
+  end
+
+end
+
+
 module Gr8
 
   VERSION = "$Release: 0.0.0 $".split()[1]
