@@ -87,6 +87,24 @@ module Enumerable
     end
   end
 
+  def sed(pat, str=nil, &block)
+    #; [!c7m34] replaces all patterns found in each line with str or block.
+    if block_given?
+      collect {|s| s.sub(pat, &block) }
+    else
+      collect {|s| s.sub(pat, str) }
+    end
+  end
+
+  def gsed(pat, str=nil, &block)
+    #; [!9lzjv] replaces first pattern found in each line with str or block.
+    if block_given?
+      collect {|s| s.gsub(pat, &block) }
+    else
+      collect {|s| s.gsub(pat, str) }
+    end
+  end
+
 end
 
 

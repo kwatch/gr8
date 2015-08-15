@@ -125,6 +125,28 @@ Oktest.scope do
     end
 
 
+    topic '#sed()' do
+
+      spec "[!c7m34] replaces all patterns found in each line with str or block." do
+        arr = ["a100", "b200", "c300"]
+        ok {arr.sed(/0/, '*')} == ["a1*0", "b2*0", "c3*0"]
+        ok {arr.sed(/[a-z]/){|s| s.upcase}} == ["A100", "B200", "C300"]
+      end
+
+    end
+
+
+    topic '#gsed()' do
+
+      spec "[!9lzjv] replaces first pattern found in each line with str or block." do
+        arr = ["a100", "b200", "c300"]
+        ok {arr.gsed(/0/, '*')} == ["a1**", "b2**", "c3**"]
+        ok {arr.gsed(/[a-z]/){|s| s.upcase}} == ["A100", "B200", "C300"]
+      end
+
+    end
+
+
   end
 
 
