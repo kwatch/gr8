@@ -10,7 +10,9 @@ $: << File.dirname(__FILE__)
 
 require "stringio"
 
-load File.class_eval { join(dirname(dirname(__FILE__)), "bin", "gr8") }
+File.class_eval do
+  load join(dirname(dirname(__FILE__)), "bin", "gr8")
+end
 
 
 def dummy_io(input=nil)
