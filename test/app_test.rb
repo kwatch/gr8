@@ -115,6 +115,18 @@ END
         ok {sout} == "true\n"
       end
 
+      spec "[!zcxh1] removes '\n' from each line automatically." do
+        |app, input_data|
+        expected = <<'END'
+"Haruhi  100"
+"Mikuru   80"
+"Yuki    120"
+END
+        code = "map{|s| s.inspect }"
+        sout, _ = dummy_io(input_data) { app.run(code) }
+        ok {sout} == expected
+      end
+
       spec "[!hsvnd] prints nothing when result is nil." do
         |app, input_data|
         sout, serr = dummy_io(input_data) { app.run("nil") }

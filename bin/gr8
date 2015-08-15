@@ -69,6 +69,13 @@ END
       #; [!r69d6] executes ruby code with $stdin.lazy as self.
       code = args[0]
       $IN = $stdin.lazy
+      (class << $IN; self; end).class_eval do
+        #; [!zcxh1] removes '\n' from each line automatically.
+        alias __each_orig each
+        def each
+          __each_orig {|s| s.chomp!; yield s }
+        end
+      end
       filename = "<#{script_name()}>"
       val = $IN.instance_eval(code, filename)
       #; [!hsvnd] prints nothing when result is nil.
