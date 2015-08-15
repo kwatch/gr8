@@ -106,40 +106,30 @@ module Enumerable
   end
 
   def move_to(verbose=true, &block)
-    #; [!n0ubo] block argument is required.
-    block_given?  or
-      raise ArgumentError.new("move_to(): block argument required.")
-    #
-    __move_to(verbose, false, false, &block)
+    __move_to("move_to", verbose, false, false, &block)
   end
 
   def move_to!(verbose=true, &block)
-    #; [!40se5] block argument is required.
-    block_given?  or
-      raise ArgumentError.new("move_to!(): block argument required.")
-    #
-    __move_to(verbose, true, false, &block)
+    __move_to("move_to!", verbose, true, false, &block)
   end
 
   def mkdir_and_move_to(verbose=true, &block)
-    #; [!k74dw] block argument is required.
-    block_given?  or
-      raise ArgumentError.new("mkdir_and_move_to(): block argument required.")
-    #
-    __move_to(verbose, false, true, &block)
+    __move_to("mkdir_and_move_to", verbose, false, true, &block)
   end
 
   def mkdir_and_move_to!(verbose=true, &block)
-    #; [!z9yus] block argument is required.
-    block_given?  or
-      raise ArgumentError.new("mkdir_and_move_to!(): block argument required.")
-    #
-    __move_to(verbose, true, true, &block)
+    __move_to("mkdir_and_move_to!", verbose, true, true, &block)
   end
 
   private
 
-  def __move_to(verbose, overwrite, mkdir, &block)
+  def __move_to(meth, verbose, overwrite, mkdir, &block)
+    #; [!n0ubo] block argument is required.
+    #; [!40se5] block argument is required.
+    #; [!k74dw] block argument is required.
+    #; [!z9yus] block argument is required.
+    block  or
+      raise ArgumentError.new("#{meth}(): block argument required.")
     require "fileutils" unless defined?(FileUtils)
     existing = nil
     collect {|fpath|
@@ -155,7 +145,7 @@ module Enumerable
         msg = nil
       #; [!azqgk] if there is a file that name is same as desination directory, skip.
       elsif File.exist?(dirpath)
-        msg = "Skip: directory #{dirpath.q} not a directory"
+        msg = "Skip: directory '#{dirpath}' not a directory"
       #; [!b9d4m] if destination directory doesn't exist, creates it.
       elsif mkdir
         FileUtils.mkdir_p(dirpath)
