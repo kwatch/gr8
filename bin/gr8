@@ -211,6 +211,16 @@ module Enumerable
 end
 
 
+class Enumerator::Lazy
+
+  def map(&block)
+    #; [!drgky] each item is available as self in block of map().
+    collect {|x| x.instance_exec(x, &block) }
+  end
+
+end
+
+
 module Gr8
 
   VERSION = "$Release: 0.0.0 $".split()[1]

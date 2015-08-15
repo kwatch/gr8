@@ -352,4 +352,21 @@ Oktest.scope do
   end
 
 
+  topic Enumerator::Lazy do
+
+
+    topic '#map()' do
+
+      spec "[!drgky] each item is available as self in block of map()." do
+        ok { (1..3).lazy.map {|i| i * 10 } }.is_a?(Enumerator::Lazy)
+        ok { (1..3).lazy.map {|i| i * 10 }.to_a } == [10, 20, 30]
+        ok { (1..3).lazy.map {|i| self*10}.to_a } == [10, 20, 30]
+      end
+
+    end
+
+
+  end
+
+
 end
