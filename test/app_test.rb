@@ -149,6 +149,21 @@ END
 END
       end
 
+      spec "[!zfmcx] each item is available as self in block of map()." do
+        |app, input_data|
+        code = 'map{self.inspect}'
+        sout, _ = dummy_io(input_data) { app.run(code) }
+        ok {sout} == <<'END'
+"Haruhi  100"
+"Mikuru   80"
+"Yuki    120"
+END
+        #
+        code = 'map{split[1]}'
+        sout, _ = dummy_io(input_data) { app.run(code) }
+        ok {sout} == "100\n80\n120\n"
+      end
+
       spec "[!hsvnd] prints nothing when result is nil." do
         |app, input_data|
         sout, serr = dummy_io(input_data) { app.run("nil") }
