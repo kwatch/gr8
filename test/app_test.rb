@@ -127,6 +127,28 @@ END
         ok {sout} == expected
       end
 
+      spec "[!i7npb] $1, $2, ... are available in grep() block argument." do
+        |app, input_data|
+        code = 'grep(/^(\w+)\s+(\d+)$/){$1}'
+        sout, _ = dummy_io(input_data) { app.run(code) }
+        ok {sout} == "Haruhi\nMikuru\nYuki\n"
+        #
+        code = 'grep(/^(\w+)\s+(\d+)$/){$2.to_i}.inject(0,:+)'
+        sout, _ = dummy_io(input_data) { app.run(code) }
+        ok {sout} == "300\n"
+      end
+
+      spec "[!vkt64] lines are chomped automatically in grep() if block is not given." do
+        |app, input_data|
+        code = 'grep(/\d+/).map{|s| s.inspect}'
+        sout, _ = dummy_io(input_data) { app.run(code) }
+        ok {sout} == <<'END'
+"Haruhi  100"
+"Mikuru   80"
+"Yuki    120"
+END
+      end
+
       spec "[!hsvnd] prints nothing when result is nil." do
         |app, input_data|
         sout, serr = dummy_io(input_data) { app.run("nil") }
