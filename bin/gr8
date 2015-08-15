@@ -76,6 +76,17 @@ module Enumerable
     i == 0 ? nil : sum.to_f / i
   end
 
+  def xsplit(pat=nil)
+    #; [!1pz77] splits each lines with pattern.
+    #; [!wte7b] if block given, use its result as index.
+    if block_given?
+      idx = yield
+      collect {|s| s.split(pat)[idx] }
+    else
+      collect {|s| s.split(pat) }
+    end
+  end
+
 end
 
 

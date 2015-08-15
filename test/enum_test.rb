@@ -106,6 +106,25 @@ Oktest.scope do
     end
 
 
+    topic '#xsplit()' do
+
+      spec "[!1pz77] splits each lines with pattern." do
+        arr = [" A  10\n", " B  20\n", " C  30\n"]
+        ok {arr.xsplit} == [["A", "10"], ["B", "20"], ["C", "30"]]
+        arr = [" A: 10\n", " B: 20\n", " C: 30\n"]
+        ok {arr.xsplit(/:/)} == [[" A", " 10\n"], [" B", " 20\n"], [" C", " 30\n"]]
+      end
+
+      spec "[!wte7b] if block given, use its result as index." do
+        arr = [" A  10\n", " B  20\n", " C  30\n"]
+        ok {arr.xsplit{1}} == ["10", "20", "30"]
+        arr = [" A: 10\n", " B: 20\n", " C: 30\n"]
+        ok {arr.xsplit(/:/){0}} == [" A", " B", " C"]
+      end
+
+    end
+
+
   end
 
 
