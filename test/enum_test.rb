@@ -19,6 +19,16 @@ Oktest.scope do
   topic Enumerable do
 
 
+    topic '#transform()' do
+
+      spec "[!peitw] similar to map() or collect(), make each item as self in block." do
+        ok { (1..3).xf {|i| i*10 }    } == [10, 20, 30]
+        ok { (1..3).xf {|i| self*10 } } == [10, 20, 30]
+      end
+
+    end
+
+
     topic '#sum()' do
 
       spec "[!9izc1] returns sum of numbers." do

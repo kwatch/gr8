@@ -31,6 +31,12 @@ end
 
 module Enumerable
 
+  def transform(&block)
+    #; [!peitw] similar to map() or collect(), make each item as self in block.
+    collect {|x| x.instance_exec(x, &block) }
+  end
+  alias xf transform
+
   def sum
     #; [!9izc1] returns sum of numbers.
     inject(0, :+)
