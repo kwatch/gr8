@@ -46,6 +46,19 @@ Oktest.scope do
   end
 
 
+  topic Kernel do
+
+    topic 'fu()' do
+
+      spec "[!ktccp] returns FileUtils class object." do
+        ok {fu} == FileUtils
+      end
+
+    end
+
+  end
+
+
   topic Gr8::Util do
 
     fixture :app do

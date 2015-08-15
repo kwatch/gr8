@@ -29,6 +29,13 @@ class String
 end
 
 
+def fu
+  #; [!ktccp] returns FileUtils class object.
+  require "fileutils" unless defined?(FileUtils)
+  FileUtils
+end
+
+
 module Enumerable
 
   def transform(&block)
