@@ -46,6 +46,21 @@ Oktest.scope do
   end
 
 
+  topic Object do
+
+    topic '_' do
+
+      spec "[!wvemx] returns self object." do
+        s = "hom"
+        ok {s}.same?(s)
+        ok {s}.NOT.same?(s+"")
+      end
+
+    end
+
+  end
+
+
   topic Kernel do
 
     topic 'fu()' do

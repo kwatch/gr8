@@ -29,6 +29,16 @@ class String
 end
 
 
+class Object
+
+  def _
+    #; [!wvemx] returns self object.
+    self
+  end
+
+end
+
+
 def fu
   #; [!ktccp] returns FileUtils class object.
   require "fileutils" unless defined?(FileUtils)
