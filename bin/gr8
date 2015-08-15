@@ -1,0 +1,138 @@
+#!/usr/bin/env ruby
+# -*- coding: utf-8 -*-
+
+###
+### gr8 -- a great command-line utility powered by Ruby
+###
+### $Release: 0.0.0 $
+### $Copyright: copyright(c) 2015 kuwata-lab.com all rights reserved $
+### $License: MIT License $
+###
+
+require "optparse"
+
+
+module Gr8
+
+  VERSION = "$Release: 0.0.0 $".split()[1]
+
+  HELP = <<'END'
+%{script} -- great command-line utility powered by Ruby
+
+Usage:
+  %{script} [options] ruby-code
+
+Options:
+  -h, --help             : print help
+  -v, --version          : print version
+
+Example:
+  $ cat data
+  Haruhi   100
+  Mikuru    80
+  Yuki     120
+  $ cat data | %{script}s 'map{|s|s.split()[1]}'
+  100
+  80
+  120
+  $ cat data | %{script}s 'map{|s|s.split()[1]}.map(&:to_i).inject(0,:+)'
+  300
+
+See https://github.com/kwatch/gr8 for details.
+END
+
+
+  class App
+
+    def run(*args)
+      #
+      begin
+        opts = parse_options(args)
+      rescue ::OptionParser::InvalidOption => ex
+        $stderr.puts "#ERROR (#{script_name()}): #{ex}"
+        return 1
+      end
+      #; [!33bj3] prints help message when '-h' or '--help' specified.
+      #; [!2tfh5] prints version string when '-v' or '--version' specified.
+      output = handle_opts(opts)
+      if output
+        puts output
+        return 0
+      end
+      #; [!7wqyh] prints error when no argument.
+      #; [!bwiqv] prints error when too many argument.
+      errmsg = validate_args(args)
+      if errmsg
+        $stderr.puts "ERROR (#{script_name()}): #{errmsg}"
+        return 1
+      end
+      #; [!r69d6] executes ruby code with $stdin.lazy as self.
+      code = args[0]
+      $IN = $stdin.lazy
+      filename = "<#{script_name()}>"
+      val = $IN.instance_eval(code, filename)
+      #; [!hsvnd] prints nothing when result is nil.
+      #; [!eiaa6] prints each item when result is Enumerable.
+      #; [!6pfay] prints value when result is not nil nor Enumerable.
+      case val
+      when nil        ; nil
+      when Enumerable ; val.each {|x| puts x }
+      else            ; puts val
+      end
+      #; [!h5wln] returns 0 as status code when executed successfully.
+      return 0
+    end
+
+    def main(argv=ARGV)
+      #; [!w9kb8] exit with status code 0 when executed successfully.
+      #; [!nbag1] exit with status code 1 when execution failed.
+      args = argv.dup
+      status = run(*args)
+      exit status
+    end
+
+    private
+
+    def script_name
+      @script_name ||= File.basename($0)
+    end
+
+    def parse_options(args)
+      #; [!5efp5] returns Hash object containing command-line options.
+      #; [!wdzss] modifies args.
+      opts = {}
+      parser = OptionParser.new
+      parser.on("-h", "--help")    {|v| opts[:help]    = true }
+      parser.on("-v", "--version") {|v| opts[:version] = true }
+      parser.parse!(args)
+      return opts
+    end
+
+    def handle_opts(opts)
+      if opts[:help]
+        return HELP % {script: script_name()}
+      end
+      if opts[:version]
+        return VERSION
+      end
+      nil
+    end
+
+    def validate_args(args)
+      if args.length == 0
+        return "argument required."
+      elsif args.length > 1
+        return "too many arguments."
+      end
+      nil
+    end
+
+  end
+
+
+end
+
+
+if __FILE__ == $0
+  Gr8::App.new.main()
+end
