@@ -147,6 +147,122 @@ Oktest.scope do
     end
 
 
+    fixture :dummy_files do
+      pr = proc do
+        if File.directory?("_test.d")
+          Dir.glob("_test.d/**/*").each {|x| File.unlink(x) if File.file?(x) }
+          Dir.glob("_test.d/**/*").sort.reverse.each {|x| Dir.rmdir(x) }
+          Dir.rmdir("_test.d")
+        end
+      end
+      pr.call
+      at_end(&pr)
+      Dir.mkdir "_test.d"
+      Dir.mkdir "_test.d/src"
+      Dir.mkdir "_test.d/lib"
+      File.open("_test.d/src/file1.txt", "w") {|f| f.write("file1") }
+      File.open("_test.d/src/file2.txt", "w") {|f| f.write("file2") }
+      nil
+    end
+
+
+    topic '#move_to()' do
+
+      spec "[!n0ubo] block argument is required." do
+        pr = proc { ["file1"].move_to }
+        ok {pr}.raise?(ArgumentError, "move_to(): block argument required.")
+      end
+
+      spec "[!qqzqz] trims target file name." do
+        |dummy_files|
+        arr = ["  _test.d/src/file1.txt\n", "  _test.d/src/file2.txt\n"]
+        arr.move_to {"_test.d/lib"}
+        ok {"_test.d/lib/file1.txt"}.file_exist?
+        ok {"_test.d/lib/file2.txt"}.file_exist?
+      end
+
+      spec "[!nnud9] destination directory name is derived from target file name." do
+        |dummy_files|
+        Dir.mkdir("_test.d/lib1")
+        Dir.mkdir("_test.d/lib2")
+        Dir.glob("_test.d/src/*.txt").move_to {|s| s =~ /file(\d+)\.\w+$/; "_test.d/lib#{$1}" }
+        ok {"_test.d/lib/file1.txt"}.NOT.exist?
+        ok {"_test.d/lib/file2.txt"}.NOT.exist?
+        ok {"_test.d/lib1/file1.txt"}.file_exist?
+        ok {"_test.d/lib2/file2.txt"}.file_exist?
+      end
+
+      spec "[!n7a1q] prints target file and destination directory when verbose mode." do
+        |dummy_files|
+        ret = Dir.glob("_test.d/src/*.txt").move_to {"_test.d/lib"}
+        ok {ret} == [
+          "Move: '_test.d/src/file1.txt' => '_test.d/lib'",
+          "Move: '_test.d/src/file2.txt' => '_test.d/lib'",
+        ]
+      end
+
+      spec "[!ey3e4] if target directory name is nil or empty, skip moving file." do
+        |dummy_files|
+        expected = [
+          "Skip: target directory name is nil or empty (file: '_test.d/src/file1.txt')",
+          "Skip: target directory name is nil or empty (file: '_test.d/src/file2.txt')",
+        ]
+        ret = Dir.glob("_test.d/src/*.txt").move_to {""}
+        ok {ret} == expected
+        ret = Dir.glob("_test.d/src/*.txt").move_to {nil}
+        ok {ret} == expected
+      end
+
+      spec "[!i5jt6] if destination directory exists, move file to it." do
+        |dummy_files|
+        ret = Dir.glob("_test.d/src/*.txt").move_to {"_test.d/lib"}
+        ok {"_test.d/lib/file1.txt"}.file_exist?
+        ok {"_test.d/lib/file2.txt"}.file_exist?
+      end
+
+      spec "[!azqgk] if there is a file that name is same as desination directory, skip." do
+        |dummy_files|
+        Dir.rmdir("_test.d/lib")
+        File.open("_test.d/lib", "w") {|f| f.write("x") }
+        ret = Dir.glob("_test.d/src/*.txt").move_to {"_test.d/lib"}
+        ok {ret} == [
+          "Skip: directory '_test.d/lib' not a directory",
+          "Skip: directory '_test.d/lib' not a directory",
+        ]
+      end
+
+      spec "[!rqu5q] if destinatio directory doesn't exist, skip." do
+        |dummy_files|
+        Dir.rmdir("_test.d/lib")
+        ret = Dir.glob("_test.d/src/*.txt").move_to {"_test.d/lib"}
+        ok {ret} == ["Skip: directory '_test.d/lib' not exist", "Skip: directory '_test.d/lib' not exist"]
+      end
+
+    end
+
+
+    topic '#mkdir_and_move_to()' do
+
+      spec "[!k74dw] block argument is required." do
+        pr = proc { ["file1"].mkdir_and_move_to }
+        ok {pr}.raise?(ArgumentError, "mkdir_and_move_to(): block argument required.")
+      end
+
+      spec "[!b9d4m] if destination directory doesn't exist, creates it." do
+        |dummy_files|
+        files = Dir.glob("_test.d/src/*.txt")
+        ret = files.mkdir_and_move_to {|s| s =~ /file(\d+)/; "_test.d/lib#{$1}" }
+        ok {"_test.d/lib1/file1.txt"}.file_exist?
+        ok {"_test.d/lib2/file2.txt"}.file_exist?
+        ok {ret} == [
+          "Move: '_test.d/src/file1.txt' => '_test.d/lib1'",
+          "Move: '_test.d/src/file2.txt' => '_test.d/lib2'",
+        ]
+      end
+
+    end
+
+
   end
 
 

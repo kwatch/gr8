@@ -105,6 +105,60 @@ module Enumerable
     end
   end
 
+  def move_to(verbose=true, &block)
+    #; [!n0ubo] block argument is required.
+    block_given?  or
+      raise ArgumentError.new("move_to(): block argument required.")
+    #
+    __move_to(verbose, false, &block)
+  end
+
+  def mkdir_and_move_to(verbose=true, &block)
+    #; [!k74dw] block argument is required.
+    block_given?  or
+      raise ArgumentError.new("mkdir_and_move_to(): block argument required.")
+    #
+    __move_to(verbose, true, &block)
+  end
+
+  private
+
+  def __move_to(verbose, mkdir, &block)
+    require "fileutils" unless defined?(FileUtils)
+    existing = nil
+    collect {|fpath|
+      #; [!qqzqz] trims target file name.
+      fpath.strip!
+      #; [!nnud9] destination directory name is derived from target file name.
+      dirpath = fpath.instance_exec(fpath, &block)
+      #; [!ey3e4] if target directory name is nil or empty, skip moving file.
+      if ! dirpath || dirpath.empty?
+        msg = "Skip: target directory name is nil or empty (file: '#{fpath}')"
+      #; [!i5jt6] if destination directory exists, move file to it.
+      elsif dirpath == existing || File.directory?(dirpath)
+        msg = nil
+      #; [!azqgk] if there is a file that name is same as desination directory, skip.
+      elsif File.exist?(dirpath)
+        msg = "Skip: directory #{dirpath.q} not a directory"
+      #; [!b9d4m] if destination directory doesn't exist, creates it.
+      elsif mkdir
+        FileUtils.mkdir_p(dirpath)
+        msg = nil
+      #; [!rqu5q] if destinatio directory doesn't exist, skip.
+      else
+        msg = "Skip: directory '#{dirpath}' not exist"
+      end
+      #
+      if msg.nil?
+        FileUtils.move(fpath, dirpath)
+        existing = dirpath
+        #; [!n7a1q] prints target file and destination directory when verbose mode.
+        msg = "Move: '#{fpath}' => '#{dirpath}'" if verbose
+      end
+      msg
+    }.reject {|s| s.nil? }
+  end
+
 end
 
 
