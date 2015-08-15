@@ -147,6 +147,21 @@ Oktest.scope do
     end
 
 
+    topic '#paths()' do
+
+      spec "[!t55ce] collects Pathname objects when block argument is not passed." do
+        arr = ["A.txt", "B.txt", "C.txt"]
+        ok {arr.paths}.all? {|x| x.is_a?(Pathname) }
+      end
+
+      spec "[!yjkm5] yields Pathname objects when block argument is passed." do
+        arr = ["A.txt", "B.txt", "C.txt"]
+        ok {arr.paths{|x| x.exist?}} == [false, false, false]
+      end
+
+    end
+
+
     fixture :dummy_files do
       pr = proc do
         if File.directory?("_test.d")
