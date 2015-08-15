@@ -295,6 +295,32 @@ END
   end
 
 
+  class EnumWrapper
+    include Enumerable
+
+    def initialize(enum, separator=nil, column=nil)
+      @_base      = enum
+      @_separator = separator
+      @_column    = column
+    end
+
+    def each
+      #; [!hloy1] splits each line into array.
+      #; [!c22km] chomps each lin before splitting.
+      #; [!m411f] selects column when column number specified.
+      sep = @_separator
+      col = @_column
+      if @_column
+        index = @_column - 1
+        @_base.each {|s| s.chomp!; yield s.split(sep)[index] }
+      else
+        @_base.each {|s| s.chomp!; yield s.split(sep) }
+      end
+    end
+
+  end
+
+
   class App
 
     def run(*args)
