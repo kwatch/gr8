@@ -273,11 +273,6 @@ END
           end
           super(pattern, &block)
         end
-        #; [!zfmcx] each item is available as self in block of map().
-        alias __map map
-        def map(&block)
-          __map {|x| x.instance_exec(x, &block) }
-        end
       end
     end
 
