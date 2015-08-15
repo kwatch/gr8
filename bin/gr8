@@ -344,10 +344,11 @@ END
         $stderr.puts "ERROR (#{script_name()}): #{errmsg}"
         return 1
       end
-      #; [!r69d6] executes ruby code with $stdin.lazy as self.
-      code = args[0]
+      #
       $IN = $stdin.lazy
       Util.define_singleton_methods_on($IN)
+      #; [!r69d6] executes ruby code with $stdin.lazy as self.
+      code = args[0]
       filename = "<#{script_name()}>"
       val = $IN.instance_eval(code, filename)
       #; [!hsvnd] prints nothing when result is nil.
