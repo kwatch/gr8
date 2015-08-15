@@ -55,6 +55,47 @@ Oktest.scope do
     end
 
 
+    topic '#avg()' do
+
+      spec "[!pvi8h] returnns average of numbers." do
+        ok {[10, 20, 30].avg} == 20.0
+      end
+
+      spec "[!poidi] returns nil when no numbers." do
+        ok {[].avg} == nil
+      end
+
+    end
+
+
+    topic '#avg_i()' do
+
+      spec "[!btiat] returns average of numbers, converting values into integer." do
+        ok {["10", "20", "30"].avg_i} == 20.0
+        ok {["10.1", "20.2", "30.3"].avg_i} == 20.0
+      end
+
+      spec "[!892q9] returns nil when no numbers." do
+        ok {[].avg_i} == nil
+      end
+
+    end
+
+
+    topic '#avg_f()' do
+
+      spec "[!oqpmc] returns average of numbers, converting values into float." do
+        ok {["10", "20", "30"].avg_f} == 20.0
+        ok {["10.1", "20.2", "30.3"].avg_f} == 20.2
+      end
+
+      spec "[!9bckq] returns nil when no numbers." do
+        ok {[].avg_f} == nil
+      end
+
+    end
+
+
   end
 
 
