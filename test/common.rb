@@ -10,8 +10,10 @@ $: << File.dirname(__FILE__)
 
 require "stringio"
 
-File.class_eval do
-  load join(dirname(dirname(__FILE__)), "bin", "gr8")
+unless defined?(Gr8)
+  File.class_eval do
+    load join(dirname(dirname(__FILE__)), "bin", "gr8")
+  end
 end
 
 
