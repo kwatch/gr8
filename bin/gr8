@@ -59,6 +59,12 @@ module Enumerable
     collect {|x| x.instance_exec(x, &block) }
   end
 
+  alias __select select
+  def select(&block)
+    #; [!41hap] each item is available as self in block of select().
+    __select {|x| x.instance_exec(x, &block) }
+  end
+
   def sum
     #; [!9izc1] returns sum of numbers.
     inject(0, :+)
@@ -217,6 +223,12 @@ class Enumerator::Lazy
   def map(&block)
     #; [!drgky] each item is available as self in block of map().
     collect {|x| x.instance_exec(x, &block) }
+  end
+
+  alias __select select
+  def select(&block)
+    #; [!uhqz2] each item is available as self in block of map().
+    __select {|x| x.instance_exec(x, &block) }
   end
 
 end
