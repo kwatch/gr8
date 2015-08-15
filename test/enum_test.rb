@@ -165,6 +165,10 @@ Oktest.scope do
       nil
     end
 
+    def _write_file(filepath, content)
+      File.open(filepath, "w") {|f| f.write(content) }
+    end
+
 
     topic '#move_to()' do
 
@@ -238,6 +242,53 @@ Oktest.scope do
         ok {ret} == ["Skip: directory '_test.d/lib' not exist", "Skip: directory '_test.d/lib' not exist"]
       end
 
+      spec "[!0gq9h] if destination file already exist, skip." do
+        |dummy_files|
+        _write_file("_test.d/lib/file1.txt", "xxx")
+        _write_file("_test.d/lib/file2.txt", "yyy")
+        ret = Dir.glob("_test.d/src/*.txt").move_to {"_test.d/lib"}
+        ok {ret} == [
+          "Skip: destination file '_test.d/lib/file1.txt' already exist.",
+          "Skip: destination file '_test.d/lib/file2.txt' already exist.",
+        ]
+        ok {File.read("_test.d/lib/file1.txt")} == "xxx"   # not overwritten
+        ok {File.read("_test.d/lib/file2.txt")} == "yyy"   # not overwrirten
+      end
+
+    end
+
+
+    topic '#move_to!()' do
+
+      spec "[!40se5] block argument is required." do
+        pr = proc { ["file1"].move_to! }
+        ok {pr}.raise?(ArgumentError, "move_to!(): block argument required.")
+      end
+
+      spec "[!ebdqh] overwrite destination file even if it exists." do
+        |dummy_files|
+        _write_file("_test.d/lib/file1.txt", "xxx")
+        _write_file("_test.d/lib/file2.txt", "yyy")
+        ret = Dir.glob("_test.d/src/*.txt").move_to! {"_test.d/lib"}
+        ok {ret} == [
+          "Move!: '_test.d/src/file1.txt' => '_test.d/lib'",
+          "Move!: '_test.d/src/file2.txt' => '_test.d/lib'",
+        ]
+        ok {File.read("_test.d/lib/file1.txt")} == "file1"   # overwritten
+        ok {File.read("_test.d/lib/file2.txt")} == "file2"   # overwrirten
+      end
+
+      spec "[!itsh0] use 'Move!' instead of 'Move' when overwriting existing file." do
+        |dummy_files|
+        _write_file("_test.d/lib/file1.txt", "xxx")
+        _write_file("_test.d/lib/file2.txt", "yyy")
+        ret = Dir.glob("_test.d/src/*.txt").move_to! {"_test.d/lib"}
+        ok {ret} == [
+          "Move!: '_test.d/src/file1.txt' => '_test.d/lib'",
+          "Move!: '_test.d/src/file2.txt' => '_test.d/lib'",
+        ]
+      end
+
     end
 
 
@@ -258,6 +309,16 @@ Oktest.scope do
           "Move: '_test.d/src/file1.txt' => '_test.d/lib1'",
           "Move: '_test.d/src/file2.txt' => '_test.d/lib2'",
         ]
+      end
+
+    end
+
+
+    topic '#mkdir_and_move_to!()' do
+
+      spec "[!z9yus] block argument is required." do
+        pr = proc { ["file1"].mkdir_and_move_to! }
+        ok {pr}.raise?(ArgumentError, "mkdir_and_move_to!(): block argument required.")
       end
 
     end

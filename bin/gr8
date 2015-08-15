@@ -110,7 +110,15 @@ module Enumerable
     block_given?  or
       raise ArgumentError.new("move_to(): block argument required.")
     #
-    __move_to(verbose, false, &block)
+    __move_to(verbose, false, false, &block)
+  end
+
+  def move_to!(verbose=true, &block)
+    #; [!40se5] block argument is required.
+    block_given?  or
+      raise ArgumentError.new("move_to!(): block argument required.")
+    #
+    __move_to(verbose, true, false, &block)
   end
 
   def mkdir_and_move_to(verbose=true, &block)
@@ -118,12 +126,20 @@ module Enumerable
     block_given?  or
       raise ArgumentError.new("mkdir_and_move_to(): block argument required.")
     #
-    __move_to(verbose, true, &block)
+    __move_to(verbose, false, true, &block)
+  end
+
+  def mkdir_and_move_to!(verbose=true, &block)
+    #; [!z9yus] block argument is required.
+    block_given?  or
+      raise ArgumentError.new("mkdir_and_move_to!(): block argument required.")
+    #
+    __move_to(verbose, true, true, &block)
   end
 
   private
 
-  def __move_to(verbose, mkdir, &block)
+  def __move_to(verbose, overwrite, mkdir, &block)
     require "fileutils" unless defined?(FileUtils)
     existing = nil
     collect {|fpath|
@@ -150,10 +166,20 @@ module Enumerable
       end
       #
       if msg.nil?
-        FileUtils.move(fpath, dirpath)
-        existing = dirpath
-        #; [!n7a1q] prints target file and destination directory when verbose mode.
-        msg = "Move: '#{fpath}' => '#{dirpath}'" if verbose
+        new_fpath = File.join(dirpath, File.basename(fpath))
+        #; [!0gq9h] if destination file already exist, skip.
+        exist_p = File.exist?(new_fpath)
+        if exist_p && ! overwrite
+          msg = "Skip: destination file '#{new_fpath}' already exist."
+        #; [!ebdqh] overwrite destination file even if it exists.
+        else
+          File.rename(fpath, new_fpath)
+          existing = dirpath
+          #; [!n7a1q] prints target file and destination directory when verbose mode.
+          #; [!itsh0] use 'Move!' instead of 'Move' when overwriting existing file.
+          move = exist_p ? "Move!" : "Move"
+          msg = "#{move}: '#{fpath}' => '#{dirpath}'" if verbose
+        end
       end
       msg
     }.reject {|s| s.nil? }
