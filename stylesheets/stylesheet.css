@@ -164,6 +164,14 @@ a.button span {
 #view-on-github {
   margin-right: 0;
 }
+/* ----------- */
+#source-code span {
+  background: transparent url(../images/textfile-icon_24x24.png) 12px 50% no-repeat;
+}
+#rubygems-org span {
+  background: transparent url(../images/rubygems-icon_24x24.png) 12px 50% no-repeat;
+}
+/* ----------- */
 
 code, pre {
   margin-bottom: 30px;
