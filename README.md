@@ -162,7 +162,7 @@ Or double quotation:
 
 Run os commands after you confirmed them:
 
-    $ ls | gr8 'grep(/(.*)\.png/) { "convert #{$1.qq}.png #{$1.qq}.jpg" }' | sh
+    $ ls | gr8 'grep(/(.*)\.png/){"convert #{$1.q}.png #{$1.q}.jpg"}' | sh
 
 
 ## Example 3: File Manipulation
@@ -186,7 +186,7 @@ And you want to rename them to other names:
 
 `fu.mv` is a short-hand to `require "fileutils"; FileUtils.mv`:
 
-    $ ls | gr8 'grep(/^a(\d+)/) { fu.mv "a#{$1}.png", "b#{$1.to_i+100}.png" }'
+    $ ls | gr8 'grep(/^a(\d+)/){fu.mv "a#{$1}.png", "b#{$1.to_i+100}.png"}'
     $ ls b*.png
     b101.png   b102.png   b103.png     # renamed from 'a1.png', 'a2.png' and 'a3.png'
 
