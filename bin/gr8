@@ -451,7 +451,7 @@ END
       #; [!vnwu6] option '-C': select colum.
       if opts[:separator] || opts[:column]
         sep = opts[:separator]
-        $IN = EnumWrapper.new($stdin.lazy, sep == true ? nil : sep, opts[:column])
+        $IN = EnumWrapper.new($stdin, sep == true ? nil : sep, opts[:column]).lazy
       else
         $IN = $stdin.lazy
         define_singleton_methods_on($IN)
