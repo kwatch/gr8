@@ -451,15 +451,15 @@ END
       #; [!vnwu6] option '-C': select colum.
       if opts[:separator] || opts[:column]
         sep = opts[:separator]
-        $IN = EnumWrapper.new($stdin, sep == true ? nil : sep, opts[:column]).lazy
+        stdin = EnumWrapper.new($stdin, sep == true ? nil : sep, opts[:column]).lazy
       else
-        $IN = $stdin.lazy
-        define_singleton_methods_on($IN)
+        stdin = $stdin.lazy
+        define_singleton_methods_on(stdin)
       end
       #; [!r69d6] executes ruby code with $stdin.lazy as self.
       code = args[0]
       filename = "<#{script_name()}>"
-      val = $IN.instance_eval(code, filename)
+      val = stdin.instance_eval(code, filename)
       #; [!hsvnd] prints nothing when result is nil.
       #; [!eiaa6] prints each item when result is Enumerable.
       #; [!6pfay] prints value when result is not nil nor Enumerable.
