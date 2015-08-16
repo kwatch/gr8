@@ -16,6 +16,8 @@ Or:
     $ chmod a+x gr8
     $ sudo mv gr8 /usr/local/bin
 
+Gr8 requires Ruby (>= 2.0).
+
 
 ## Usage
 

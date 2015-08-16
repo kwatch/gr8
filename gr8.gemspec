@@ -45,5 +45,6 @@ END
   #o.test_files   = o.files.grep(/^test\//)
   o.test_file     = "test/test_all.rb"
 
+  o.required_ruby_version = '>= 2.0'
   o.add_development_dependency "oktest", "~> 0"
 end
