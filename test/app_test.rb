@@ -32,7 +32,7 @@ END
 
     topic '#run()' do
 
-      spec "[!33bj3] prints help message when '-h' or '--help' specified." do
+      spec "[!33bj3] option '-h', '--help': prints help message." do
         |app|
         expected = Gr8::HELP % {script: "gr8"}
         #
@@ -49,7 +49,7 @@ END
         ok {status} == 0
       end
 
-      spec "[!2tfh5] prints version string when '-v' or '--version' specified." do
+      spec "[!2tfh5] option '-v', '--version': prints version string." do
         |app|
         expected = Gr8::VERSION + "\n"
         #

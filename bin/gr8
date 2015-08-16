@@ -389,11 +389,10 @@ END
 
     def parse_options(args)
       #; [!5efp5] returns Hash object containing command-line options.
-      #; [!wdzss] modifies args.
       opts = {}
       parser = OptionParser.new
-      parser.on("-h", "--help")    {|v| opts[:help]    = true }
-      parser.on("-v", "--version") {|v| opts[:version] = true }
+      parser.on("-h", "--help")     {|v| opts[:help]    = true }
+      parser.on("-v", "--version")  {|v| opts[:version] = true }
       parser.on("-r lib[,lib2,..]") {|v| opts[:require] = v }
       parser.on("-F[sep]") do |v|
         #; [!jt4y5] option '-F': separator is omissible.
@@ -417,6 +416,7 @@ END
           raise invalid_argument_error(v, "column number should be >= 1")
         end
       end
+      #; [!wdzss] modifies args.
       parser.parse!(args)
       return opts
     end
@@ -428,11 +428,11 @@ END
     end
 
     def handle_opts(opts)
-      #; [!33bj3] prints help message when '-h' or '--help' specified.
+      #; [!33bj3] option '-h', '--help': prints help message.
       if opts[:help]
         return HELP % {script: script_name()}
       end
-      #; [!2tfh5] prints version string when '-v' or '--version' specified.
+      #; [!2tfh5] option '-v', '--version': prints version string.
       if opts[:version]
         return VERSION
       end
