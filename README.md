@@ -446,6 +446,34 @@ Source code:
   end
 
 
+### Enumerable#edit(verbose=true, encodint='utf-8'){|content, filepath| ...}
+
+Edit file content.
+
+Example:
+
+    $ ls *.rb | gr8 'edit{|s|
+      s = s.gsub(/Release: \d+\.\d+\.\d+/, "Release: 1.2.3")
+      s = s.gsub(/Copyright: \d+-\d+/, "Copyright: 2013-2015")
+      s }'
+
+
+### Enumerable#edit_i(suffix, verbose=true, encodint='utf-8'){|content, filepath| ...}
+
+Copy backup file with suffix before editing file.
+
+Example:
+
+    $ ls *.rb
+    hom.rb    mad.rb
+    $ ls *.rb | gr8 'edit_i(".bkup"){|s|
+      s = s.gsub(/Release: \d+\.\d+\.\d+/, "Release: 1.2.3")
+      s = s.gsub(/Copyright: \d+-\d+/, "Copyright: 2013-2015")
+      s }'
+    $ ls *.bkup
+    hom.rb    hom.rb.bkup     mad.rb     mad.rb.bkup
+
+
 ### Enumerable#copy_to{...}, #copy_to!{...}
 
 (Experimental)
