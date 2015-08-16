@@ -5,7 +5,7 @@ task :default => :test
 
 desc "run test scripts"
 task :test do
-  sh "ruby -Itest test/oktest.rb -ss test"
+  sh "ruby -Itest test/oktest.rb -ss test/*_test.rb"
 end
 
 
