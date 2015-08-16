@@ -51,9 +51,12 @@ body {
   font-family: 'Helvetica Neue', Helvetica, Arial, serif;
   font-size: 1em;
   line-height: 1.5;
+/*
   color: #6d6d6d;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
   background: #e7e7e7 url(../images/body-bg.png) 0 0 repeat;
+*/
+  color: #333;
 }
 
 a {
@@ -86,11 +89,17 @@ header h2 {
 
 #container {
   min-height: 595px;
+/*
   background: transparent url(../images/highlight-bg.jpg) 50% 0 no-repeat;
+*/
 }
 
 .inner {
+/*
   width: 620px;
+  margin: 0 auto;
+*/
+  width: 700px;
   margin: 0 auto;
 }
 
@@ -192,6 +201,9 @@ pre {
   color: #f2f2f2;
   text-shadow: none;
   background: #303030;
+/* ----------- */
+  border-radius: 5px;
+/* ----------- */
 }
 pre code {
   padding: 0;
@@ -256,14 +268,20 @@ h2 {
   margin-bottom: 8px;
   font-size: 22px;
   font-weight: bold;
+/*
   color: #303030;
+*/
+  color: #006;
 }
 
 h3 {
   margin-bottom: 8px;
   font-size: 18px;
   font-weight: bold;
+/*
   color: #d5000d;
+*/
+  color: #669;
 }
 
 h4 {
