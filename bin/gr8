@@ -203,7 +203,7 @@ module Enumerable
 
   private
 
-  def __move_to(meth, verbose, overwrite, mkdir, &block)
+  def __move_to(meth, verbose_p, overwrite_p, mkdir_p, &block)
     #; [!n0ubo] block argument is required.
     #; [!40se5] block argument is required.
     #; [!k74dw] block argument is required.
@@ -227,7 +227,7 @@ module Enumerable
       elsif File.exist?(dirpath)
         msg = "Skip: directory '#{dirpath}' not a directory"
       #; [!b9d4m] if destination directory doesn't exist, creates it.
-      elsif mkdir
+      elsif mkdir_p
         FileUtils.mkdir_p(dirpath)
         msg = nil
       #; [!rqu5q] if destinatio directory doesn't exist, skip.
@@ -239,7 +239,7 @@ module Enumerable
         new_fpath = File.join(dirpath, File.basename(fpath))
         #; [!0gq9h] if destination file already exist, skip.
         exist_p = File.exist?(new_fpath)
-        if exist_p && ! overwrite
+        if exist_p && ! overwrite_p
           msg = "Skip: destination file '#{new_fpath}' already exist."
         #; [!ebdqh] overwrite destination file even if it exists.
         else
@@ -248,14 +248,14 @@ module Enumerable
           #; [!n7a1q] prints target file and destination directory when verbose mode.
           #; [!itsh0] use 'Move!' instead of 'Move' when overwriting existing file.
           move = exist_p ? "Move!" : "Move"
-          msg = "#{move}: '#{fpath}' => '#{dirpath}'" if verbose
+          msg = "#{move}: '#{fpath}' => '#{dirpath}'" if verbose_p
         end
       end
       msg
     }.reject {|s| s.nil? }
   end
 
-  def __copy_or_rename_as(action, verbose, overwrite, mkdir, meth, &block)
+  def __copy_or_rename_as(action, verbose_p, overwrite_p, mkdir_p, meth, &block)
     #; [!ignfm] block argument is required.
     block  or
       raise ArgumentError.new("#{meth}(): block argument required.")
@@ -274,7 +274,7 @@ module Enumerable
       #
       elsif File.exist?(new_fpath)
         #; [!1yzjd] if target file or directory already exists, removes it before renaming file.
-        if overwrite
+        if overwrite_p
           FileUtils.rm_rf(new_fpath)
           overwritten = true
           msg = nil
@@ -290,7 +290,7 @@ module Enumerable
           existing = dirpath
           msg = nil
         #; [!sh2ti] if directory of target file not exist, creates it.
-        elsif mkdir
+        elsif mkdir_p
           FileUtils.mkdir_p(dirpath)
           existing = dirpath
           msg = nil
@@ -312,7 +312,7 @@ module Enumerable
         #; [!vt24y] prints source and destination file path when verbose mode.
         #; [!gd9j9] use 'Rename!' instead of 'Rename' when overwriting existing file.
         #; [!8warb] use 'Copy!' instead of 'Copy' when overwriting exsiting file.
-        msg = "#{action}#{overwritten ? '!': ''}: '#{fpath}' => '#{new_fpath}'" if verbose
+        msg = "#{action}#{overwritten ? '!': ''}: '#{fpath}' => '#{new_fpath}'" if verbose_p
       end
       msg
     }.reject {|s| s.nil? }
