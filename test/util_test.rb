@@ -74,64 +74,6 @@ Oktest.scope do
   end
 
 
-  topic Gr8::Util do
-
-    fixture :app do
-      app = Gr8::App.new
-      app.instance_variable_set('@script_name', "gr8")
-      app
-    end
-
-    fixture :input_data do
-      <<END
-Haruhi  100
-Mikuru   80
-Yuki    120
-END
-    end
-
-
-    topic '.define_singleton_methods_on()' do
-
-      spec "[!zcxh1] removes '\n' from each line automatically." do
-        |app, input_data|
-        expected = <<'END'
-"Haruhi  100"
-"Mikuru   80"
-"Yuki    120"
-END
-        code = "map{|s| s.inspect }"
-        sout, _ = dummy_io(input_data) { app.run(code) }
-        ok {sout} == expected
-      end
-
-      spec "[!i7npb] $1, $2, ... are available in grep() block argument." do
-        |app, input_data|
-        code = 'grep(/^(\w+)\s+(\d+)$/){$1}'
-        sout, _ = dummy_io(input_data) { app.run(code) }
-        ok {sout} == "Haruhi\nMikuru\nYuki\n"
-        #
-        code = 'grep(/^(\w+)\s+(\d+)$/){$2.to_i}.inject(0,:+)'
-        sout, _ = dummy_io(input_data) { app.run(code) }
-        ok {sout} == "300\n"
-      end
-
-      spec "[!vkt64] lines are chomped automatically in grep() if block is not given." do
-        |app, input_data|
-        code = 'grep(/\d+/).map{|s| s.inspect}'
-        sout, _ = dummy_io(input_data) { app.run(code) }
-        ok {sout} == <<'END'
-"Haruhi  100"
-"Mikuru   80"
-"Yuki    120"
-END
-      end
-
-    end
-
-  end
-
-
   topic Gr8::EnumWrapper do
 
 

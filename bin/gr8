@@ -278,32 +278,6 @@ See https://github.com/kwatch/gr8 for details.
 END
 
 
-  module Util
-
-    module_function
-
-    def define_singleton_methods_on(stdin)
-      (class << stdin; self; end).class_eval do
-        #; [!zcxh1] removes '\n' from each line automatically.
-        alias __each_orig each
-        def each
-          __each_orig {|s| s.chomp!; yield s }
-        end
-        alias __each_new each
-        #; [!i7npb] $1, $2, ... are available in grep() block argument.
-        #; [!vkt64] lines are chomped automatically in grep() if block is not given.
-        def grep(pattern, &block)
-          if pattern.is_a?(Regexp) && block
-            (class << self; self; end).class_eval { alias each __each_orig }
-          end
-          super(pattern, &block)
-        end
-      end
-    end
-
-  end
-
-
   class EnumWrapper
     include Enumerable
 
@@ -360,7 +334,7 @@ END
         $IN = EnumWrapper.new($stdin.lazy, sep == true ? nil : sep, opts[:column])
       else
         $IN = $stdin.lazy
-        Util.define_singleton_methods_on($IN)
+        define_singleton_methods_on($IN)
       end
       #; [!r69d6] executes ruby code with $stdin.lazy as self.
       code = args[0]
@@ -460,6 +434,25 @@ END
         return "too many arguments."
       end
       nil
+    end
+
+    def define_singleton_methods_on(stdin)
+      (class << stdin; self; end).class_eval do
+        #; [!zcxh1] removes '\n' from each line automatically.
+        alias __each_orig each
+        def each
+          __each_orig {|s| s.chomp!; yield s }
+        end
+        alias __each_new each
+        #; [!i7npb] $1, $2, ... are available in grep() block argument.
+        #; [!vkt64] lines are chomped automatically in grep() if block is not given.
+        def grep(pattern, &block)
+          if pattern.is_a?(Regexp) && block
+            (class << self; self; end).class_eval { alias each __each_orig }
+          end
+          super(pattern, &block)
+        end
+      end
     end
 
   end
