@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-dark.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <title>Gr8 by kwatch</title>
+  </head>
+
+  <body>
+    <div id="container">
+      <div class="inner">
+
+        <header>
+          <h1>Gr8</h1>
+          <h2>a great command-line utility powered by Ruby</h2>
+        </header>
+
+        <section id="downloads" class="clearfix">
+          <a href="https://github.com/kwatch/gr8/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
+          <a href="https://github.com/kwatch/gr8/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
+          <a href="https://github.com/kwatch/gr8" id="view-on-github" class="button"><span>View on GitHub</span></a>
+        </section>
+
+        <hr>
+
+        <section id="main_content">
+          <h1>
+<a id="about" class="anchor" href="#about" aria-hidden="true"><span class="octicon octicon-link"></span></a>About</h1>
+
+<p>(Release: $Release: 0.0.0 $)</p>
+
+<p>gr8 (pronounce as <em>greight</em> or <em>great</em>) is a great command-line utility powered by Ruby.
+You can use gr8 instead of sed or awk.</p>
+
+<h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation</h2>
+
+<pre><code>$ gem install gr8
+</code></pre>
+
+<p>Or:</p>
+
+<pre><code>$ curl -O http://bit.ly/gr8_rb
+$ mv gr8_rb gr8
+$ chmod a+x gr8
+$ sudo mv gr8 /usr/local/bin
+</code></pre>
+
+<h2>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Usage</h2>
+
+<p>Usage: gr8 <em>[options]</em> ruby-code</p>
+
+<p>Options:</p>
+
+<ul>
+<li>-h, --help        : show help</li>
+<li>-v, --version     : show version</li>
+<li>-r lib[,lib2,...] : require libraries</li>
+<li>-F[regexp]        : separate each line with separator</li>
+<li>-C N              : select column (1-origin)</li>
+</ul>
+
+<h2>
+<a id="example-1-aggregation" class="anchor" href="#example-1-aggregation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example 1: Aggregation</h2>
+
+<p>Data file:</p>
+
+<pre><code>$ cat data
+Haruhi  100
+Mikuru   80
+Yuki    120
+</code></pre>
+
+<p>Prints each line (<code>gr8</code> command prints expression value automatically when non-nil):</p>
+
+<pre><code>$ cat data | gr8 '$stdin.lazy.map{|s| s }'
+Haruhi  100
+Mikuru   80
+Yuki    120
+</code></pre>
+
+<p><code>$stdin.lazy</code> is omissible because <code>gr8</code> command uses it as current context (=<code>self</code>):</p>
+
+<pre><code>$ cat data | gr8 'map{|s| s }'
+Haruhi  100
+Mikuru   80
+Yuki    120
+</code></pre>
+
+<p>Select second column:</p>
+
+<pre><code>$ cat data | gr8 'map{|s| s.split()[1] }'
+100
+80
+120
+</code></pre>
+
+<p><code>map{|s|s.split()}</code> can be <code>map{split()}</code> in <code>gr8</code> command
+because <code>gr</code> extends <code>map()</code> and <code>select()</code> to set each item as self
+in block arguments of them:</p>
+
+<pre><code>$ cat data | gr8 'map{split()[1]}'
+100
+80
+120
+</code></pre>
+
+<p>Calculates total of numbers:</p>
+
+<pre><code>$ cat data | gr8 'map{split()[1]}.map(&amp;:to_i).inject(0,:+)'
+300
+</code></pre>
+
+<p><code>sum()</code> is a short-hand for <code>inject(0,:+)</code>:</p>
+
+<pre><code>$ cat data | gr8 'map{split()[1]}.map(&amp;:to_i).sum'
+300
+</code></pre>
+
+<p><code>sum_i()</code> is a short-hand for <code>map(&amp;:to_i).inject(0,:+)</code>:</p>
+
+<pre><code>$ cat data | gr8 'map{split()[1]}.sum_i'   # or 'sum_f' for float
+300
+</code></pre>
+
+<p>Command-line opiton '-F' splits each line into array:</p>
+
+<pre><code>$ cat data | gr8 -F 'map{self.inspect}'
+["Haruhi", "100"]
+["Mikuru", "80"]
+["Yuki", "120"]
+$ cat data | gr8 -F 'map{self[1]}.sum_i'   # or 'map{|a|a[1]}.sum_i'
+300
+</code></pre>
+
+<p>Command-line option '-C n' selects column (1-origin):</p>
+
+<pre><code>$ cat data | gr8 -C 2 'map{self}'
+100
+80
+120
+$ cat data | gr8 -C 2 'sum_i'
+300
+</code></pre>
+
+<p>Calculates average of numbers instead of total:</p>
+
+<pre><code>$ cat data | gr8 -C 2 'map(&amp;:to_i).avg'
+300.0
+$ cat data | gr8 -C 2 'avg_i'
+300.0
+</code></pre>
+
+<p>Compared to <code>ruby -ne</code>:</p>
+
+<pre><code>$ cat data | ruby -ne 'BEGIN{t=0};t+=$_.split[1].to_i;END{p t}'
+300
+$ cat data | ruby -ane 'BEGIN{t=0};t+=$F[1].to_i;END{p t}'
+300
+</code></pre>
+
+<h2>
+<a id="example-2-generating-shell-commands" class="anchor" href="#example-2-generating-shell-commands" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example 2: Generating Shell Commands</h2>
+
+<p>Assume that there are some image files:</p>
+
+<pre><code>$ ls
+img1.jpg      img2.jpg      img3.jpg
+img4.png      img5.png      img6.png
+</code></pre>
+
+<p>Select PNG files:</p>
+
+<pre><code>$ ls | gr8 'grep(/(.*)\.png$/)'
+img1.png
+img2.png
+img3.png
+</code></pre>
+
+<p>Prints new filename replacing '.png' with '.jpg':</p>
+
+<pre><code>$ ls | gr8 'grep(/(.*)\.png/) { "#{$1}.jpg" }'
+img1.jpg
+img2.jpg
+img3.jpg
+</code></pre>
+
+<p>Prints OS command to convert PNG file into JPG:</p>
+
+<pre><code>$ ls | gr8 'grep(/(.*)\.png/) { "convert #{$1}.png #{$1}.jpg" }'
+convert img1.png img1.jpg
+convert img2.png img2.jpg
+convert img3.png img3.jpg
+</code></pre>
+
+<p>You may want quotes file name with single quotation:</p>
+
+<pre><code>$ ls | gr8 'grep(/(.*)\.png/) { "convert #{$1.q}.png #{$1.q}.jpg" }'
+convert 'img1'.png 'img1'.jpg
+convert 'img2'.png 'img2'.jpg
+convert 'img3'.png 'img3'.jpg
+</code></pre>
+
+<p>Or double quotation:</p>
+
+<pre><code>$ ls | gr8 'grep(/(.*)\.png/) { "convert #{$1.qq}.png #{$1.qq}.jpg" }'
+convert "img1".png "img1".jpg
+convert "img2".png "img2".jpg
+convert "img3".png "img3".jpg
+</code></pre>
+
+<p>Run os commands after you confirmed them:</p>
+
+<pre><code>$ ls | gr8 'grep(/(.*)\.png/) { "convert #{$1.qq}.png #{$1.qq}.jpg" }' | sh
+</code></pre>
+
+<h2>
+<a id="example-3-file-manipulation" class="anchor" href="#example-3-file-manipulation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example 3: File Manipulation</h2>
+
+<p><code>Kernel#fu()</code> is a short-hand which returns <code>FileUtil</code> module.
+Using it, You can rename or move files very easily.</p>
+
+<p>Assume that there are several PNG files:</p>
+
+<pre><code>$ ls | gr8 'grep(/^a(\d+)/)'
+a1.png
+a2.png
+a3.png
+</code></pre>
+
+<p>And you want to rename them to other names:</p>
+
+<pre><code>$ ls | gr8 'grep(/^a(\d+)/) { "b#{$1.to_i+100}.png" }'
+b101.png
+b102.png
+b103.png
+</code></pre>
+
+<p><code>fu.mv</code> is a short-hand to <code>require "fileutils"; FileUtils.mv</code>:</p>
+
+<pre><code>$ ls | gr8 'grep(/^a(\d+)/) { fu.mv "a#{$1}.png", "b#{$1.to_i+100}.png" }'
+$ ls b*.png
+b101.png   b102.png   b103.png     # renamed from 'a1.png', 'a2.png' and 'a3.png'
+</code></pre>
+
+<p>(Experimental)</p>
+
+<p><code>gr8</code> provides more convenient methods to mapipulate files:</p>
+
+<pre><code>$ ls | gr8 'copy_as    { sub(/\.htm$/, ".html") }'
+$ ls | gr8 'copy_as!   { sub(/\.htm$/, ".html") }'  # overwrite existing file
+$ ls | gr8 'rename_as  { sub(/\.htm$/, ".html") }'
+$ ls | gr8 'rename_as! { sub(/\.htm$/, ".html") }'  # overwrite existing file
+$ ls | gr8 'copy_to  { "some/where/directory/" }'
+$ ls | gr8 'copy_to! { "some/where/directory/" }'   # overwrite existing file
+$ ls | gr8 'move_to  { "some/where/directory/" }'
+$ ls | gr8 'move_to! { "some/where/directory/" }'   # overwrite existing file
+</code></pre>
+
+<h2>
+<a id="references" class="anchor" href="#references" aria-hidden="true"><span class="octicon octicon-link"></span></a>References</h2>
+
+<h3>
+<a id="kernelfu" class="anchor" href="#kernelfu" aria-hidden="true"><span class="octicon octicon-link"></span></a>Kernel#fu()</h3>
+
+<p>Returns <code>FileUtils</code> class object.</p>
+
+<p>Example:</p>
+
+<pre><code>$ ls | gr8 'grep(/(.*)\.png/){fu.mv "#{$1}.png", "#{$1}.jpg"}'
+</code></pre>
+
+<h3>
+<a id="stringq-qq" class="anchor" href="#stringq-qq" aria-hidden="true"><span class="octicon octicon-link"></span></a>String#q(), #qq()</h3>
+
+<p><code>q()</code> quotes string with single-quotation, with escaping singile-quotation with backslash.</p>
+
+<p><code>qq()</code> quotes string with double-quotation, with escaping singile-quotation with backslash.</p>
+
+<p>These are convenient when file name contains spaces.</p>
+
+<p>Example:</p>
+
+<pre><code>$ echo 'Image 1.png' | gr8 'grep(/(.*)\.png/){"convert #{$1.q}.png #{$1.q}.jpg"}'
+convert 'Image 1'.png 'Image 1'.jpg
+$ ls | gr8 'grep(/(.*)\.png/){"convert #{$1.qq}.png #{$1.qq}.jpg"}'
+convert "Image 1".png "Image 1".jpg
+</code></pre>
+
+<h3>
+<a id="enumerabletransform-xf" class="anchor" href="#enumerabletransform-xf" aria-hidden="true"><span class="octicon octicon-link"></span></a>Enumerable#transform(){...}, #xf(){...}</h3>
+
+<p>Similar to <code>map()</code>, but it sets each item as self in block argument.</p>
+
+<p>Example:</p>
+
+<pre><code>$ ls *.png | gr8 'xf{self}'
+A.png
+B.png
+C.png
+$ ls *.png | gr8 'xf{sub(/\.png/, '.jpg')}'
+A.jpg
+B.jpg
+C.jpg
+</code></pre>
+
+<p>Source code:</p>
+
+<pre><code>def transform(&amp;block)
+  collect {|x| x.instance_exec(x, &amp;block) }
+end
+alias xf transform
+</code></pre>
+
+<h3>
+<a id="enumerablemap" class="anchor" href="#enumerablemap" aria-hidden="true"><span class="octicon octicon-link"></span></a>Enumerable#map(){...}</h3>
+
+<p>Extended to set each item as self in block argument of <code>map()</code>.
+If you want original <code>map()</code>, use <code>collect()</code> instead.</p>
+
+<p>Example:</p>
+
+<pre><code>$ ls *.png | gr8 'map{self}'
+A.png
+B.png
+C.png
+$ ls *.png | gr8 'map{sub(/\.png/, '.jpg')}'
+A.jpg
+B.jpg
+C.jpg
+</code></pre>
+
+<p>Source code:</p>
+
+<pre><code>alias __map map
+def map(&amp;block)
+  __map {|x| x.instance_exec(x, &amp;block) }
+end
+</code></pre>
+
+<h3>
+<a id="enumerableselect" class="anchor" href="#enumerableselect" aria-hidden="true"><span class="octicon octicon-link"></span></a>Enumerable#select(){...}</h3>
+
+<p>Extended to set each item as self in block argument of <code>select()</code>.
+If you want original <code>select()</code>, use <code>find_all()</code> instead.</p>
+
+<p>Example:</p>
+
+<pre><code>$ ls *.png | gr8 'select{self}'
+A.png
+B.png
+C.png
+$ ls *.png | gr8 'select{start_with?("B")}'
+B.jpg
+</code></pre>
+
+<p>Source code:</p>
+
+<p>alias __select select
+  def select(&amp;block)
+    __select {|x| x.instance_exec(x, &amp;block) }
+  end</p>
+
+<h3>
+<a id="enumerablesum" class="anchor" href="#enumerablesum" aria-hidden="true"><span class="octicon octicon-link"></span></a>Enumerable#sum()</h3>
+
+<p>Same as <code>inject(0, :+)</code>.</p>
+
+<p>Example:</p>
+
+<pre><code>$ cat file
+10.5
+20.5
+30.5
+$ cat file | gr8 'map(&amp;:to_f).sum'
+61.5
+</code></pre>
+
+<h3>
+<a id="enumerablesum_i-sum_f" class="anchor" href="#enumerablesum_i-sum_f" aria-hidden="true"><span class="octicon octicon-link"></span></a>Enumerable#sum_i(), #sum_f()</h3>
+
+<p>Same as <code>map(&amp;:to_i).inject(0, :+)</code> or <code>map(&amp;:to_f).inject(0, :+)</code></p>
+
+<p>Example:</p>
+
+<pre><code>$ cat file
+10.5
+20.5
+30.5
+$ cat file | gr8 'sum_i'
+60
+$ cat file | gr8 'sum_f'
+61.5
+</code></pre>
+
+<h3>
+<a id="enumerableavg" class="anchor" href="#enumerableavg" aria-hidden="true"><span class="octicon octicon-link"></span></a>Enumerable#avg()</h3>
+
+<p>Returns average of numbers.</p>
+
+<p>Example:</p>
+
+<pre><code>$ cat file
+10.1
+20.2
+30.3
+$ cat data |gr8 'map(&amp;:to_i).avg'
+20.0
+</code></pre>
+
+<h3>
+<a id="enumerableavg_i-avg_f" class="anchor" href="#enumerableavg_i-avg_f" aria-hidden="true"><span class="octicon octicon-link"></span></a>Enumerable#avg_i(), #avg_f()</h3>
+
+<p>Same as <code>map(&amp;:to_i).avg</code> or <code>map(&amp;:to_f).avg</code>.</p>
+
+<p>Example:</p>
+
+<pre><code>$ cat file
+10.1
+20.2
+30.3
+$ cat data |gr8 'avg_i'
+20.0
+$ cat data |gr8 'avg_f'
+20.2
+</code></pre>
+
+<h3>
+<a id="enumerablesedpattern-replacing-sedpattern" class="anchor" href="#enumerablesedpattern-replacing-sedpattern" aria-hidden="true"><span class="octicon octicon-link"></span></a>Enumerable#sed(pattern, replacing), #sed(pattern){...}</h3>
+
+<p>Replaces the first pattern in each line with replacing string or block.
+Internally, <code>sed()</code> calls <code>String#sub()</code>.</p>
+
+<p>Example:</p>
+
+<pre><code>$ ls *.png
+A.png
+B.png
+C.png
+$ ls *.png | gr8 'sed(/png/, "jpg")'
+A.png
+B.png
+C.png
+</code></pre>
+
+<p>Source code:</p>
+
+<pre><code>def sed(pat, str=nil, &amp;block)
+  if block_given?
+    collect {|s| s.sub(pat, &amp;block) }
+  else
+    collect {|s| s.sub(pat, str) }
+  end
+end
+</code></pre>
+
+<h3>
+<a id="enumerablegsedpattern-replacing-gsedpattern" class="anchor" href="#enumerablegsedpattern-replacing-gsedpattern" aria-hidden="true"><span class="octicon octicon-link"></span></a>Enumerable#gsed(pattern, replacing), #gsed(pattern){...}</h3>
+
+<p>Replaces all of pattern in each line with replacing string or block.
+Internally, <code>gsed()</code> calls <code>String#gsub()</code>.</p>
+
+<p>Example:</p>
+
+<pre><code>$ ls *.png
+A1-1.png
+A1-2.png
+A1-3.png
+$ ls *.png | gr8 'sed(/\d+/, "00\\&amp;")'
+A001-1.png
+A001-2.png
+A001-3.png
+$ ls *.png | gr8 'gsed(/\d+/, "00\\&amp;")'
+A001-001.png
+A001-002.png
+A001-003.png
+</code></pre>
+
+<p>Source code:</p>
+
+<pre><code>def gsed(pat, str=nil, &amp;block)
+  if block_given?
+    collect {|s| s.gsub(pat, &amp;block) }
+  else
+    collect {|s| s.gsub(pat, str) }
+  end
+end
+</code></pre>
+
+<h3>
+<a id="enumerablepaths-paths" class="anchor" href="#enumerablepaths-paths" aria-hidden="true"><span class="octicon octicon-link"></span></a>Enumerable#paths(), #paths{...}</h3>
+
+<p>Converts each item into <code>Pathname</code> object.
+Library <code>pathname</code> will be loaded automatically.</p>
+
+<p>Example:</p>
+
+<pre><code>$ /bin/ls | gr8 'paths{|x| "#{x}: #{x.ftype}"}'
+MIT-LICENSE: file
+README.txt: file
+Rakefile: file
+bin: directory
+lib: directory
+test: directory
+</code></pre>
+
+<p>Source code:</p>
+
+<p>def paths(&amp;block)
+    require "pathname" unless defined?(Pathname)
+    if block_given?
+      collect {|s| x = Pathname(s); x.instance_exec(x, &amp;block) }
+    else
+      collect {|s| Pathname(s) }
+    end
+  end</p>
+
+<h3>
+<a id="enumerablecopy_to-copy_to" class="anchor" href="#enumerablecopy_to-copy_to" aria-hidden="true"><span class="octicon octicon-link"></span></a>Enumerable#copy_to{...}, #copy_to!{...}</h3>
+
+<p>(Experimental)</p>
+
+<p>Copy files into destination directory, without renaming basename.</p>
+
+<ul>
+<li>Block argument should return destination directory name.</li>
+<li>
+<code>copy_to()</code> skips when destination file already exists.</li>
+<li>
+<code>copy_to!()</code> overwrites when destination file already exists.</li>
+<li>Both skips copying when destination directory doesn't exist.</li>
+</ul>
+
+<h3>
+<a id="enumerablemkdir_and_copy_to-mkdir_and_copy_to" class="anchor" href="#enumerablemkdir_and_copy_to-mkdir_and_copy_to" aria-hidden="true"><span class="octicon octicon-link"></span></a>Enumerable#mkdir_and_copy_to{...}, #mkdir_and_copy_to!{...}</h3>
+
+<p>(Experimental)</p>
+
+<p>Similar to <code>copy_to()</code> or <code>copy_to!()</code> except creating destination directory when not exist.</p>
+
+<h3>
+<a id="enumerablemove_to-move_to" class="anchor" href="#enumerablemove_to-move_to" aria-hidden="true"><span class="octicon octicon-link"></span></a>Enumerable#move_to{...}, #move_to!{...}</h3>
+
+<p>(Experimental)</p>
+
+<p>Move files into destination directory, without renaming basename.</p>
+
+<ul>
+<li>Block argument should return destination directory name.</li>
+<li>
+<code>move_to()</code> skips when destination file already exists.</li>
+<li>
+<code>move_to!()</code> overwrites when destination file already exists.</li>
+<li>Both skips moving files when destination directory doesn't exist.</li>
+</ul>
+
+<h3>
+<a id="enumerablemkdir_and_move_to-mkdir_and_move_to" class="anchor" href="#enumerablemkdir_and_move_to-mkdir_and_move_to" aria-hidden="true"><span class="octicon octicon-link"></span></a>Enumerable#mkdir_and_move_to{...}, #mkdir_and_move_to!{...}</h3>
+
+<p>(Experimental)</p>
+
+<p>Similar to <code>move_to()</code> or <code>move_to!()</code> except creating destination directory when not exist.</p>
+
+<h3>
+<a id="enumerablecopy_as-copy_as" class="anchor" href="#enumerablecopy_as-copy_as" aria-hidden="true"><span class="octicon octicon-link"></span></a>Enumerable#copy_as{...}, #copy_as!{...}</h3>
+
+<p>(Experimental)</p>
+
+<p>Copy files into destination directory, with renaming basename.</p>
+
+<ul>
+<li>Block argument should return destination file name.</li>
+<li>
+<code>copy_as()</code> skips when destination file already exists.</li>
+<li>
+<code>copy_as!()</code> overwrites when destination file already exists.</li>
+<li>Both skips copying when destination directory doesn't exist.</li>
+</ul>
+
+<h3>
+<a id="enumerablemkdir_and_copy_as-mkdir_and_copy_as" class="anchor" href="#enumerablemkdir_and_copy_as-mkdir_and_copy_as" aria-hidden="true"><span class="octicon octicon-link"></span></a>Enumerable#mkdir_and_copy_as{...}, #mkdir_and_copy_as!{...}</h3>
+
+<p>(Experimental)</p>
+
+<p>Similar to <code>copy_as()</code> or <code>copy_as!()</code> except creating destination directory when not exist.</p>
+
+<h3>
+<a id="enumerablerename_as-rename_as" class="anchor" href="#enumerablerename_as-rename_as" aria-hidden="true"><span class="octicon octicon-link"></span></a>Enumerable#rename_as{...}, #rename_as!{...}</h3>
+
+<p>(Experimental)</p>
+
+<p>Move files into destination directory, with renaming basename.</p>
+
+<ul>
+<li>Block argument should return destination file name.</li>
+<li>
+<code>rename_as()</code> skips when destination file already exists.</li>
+<li>
+<code>rename_as!()</code> overwrites when destination file already exists.</li>
+<li>Both skips moving when destination directory doesn't exist.</li>
+</ul>
+
+<h3>
+<a id="enumerablemkdir_and_rename_as-mkdir_and_rename_as" class="anchor" href="#enumerablemkdir_and_rename_as-mkdir_and_rename_as" aria-hidden="true"><span class="octicon octicon-link"></span></a>Enumerable#mkdir_and_rename_as{...}, #mkdir_and_rename_as!{...}</h3>
+
+<p>(Experimental)</p>
+
+<p>Similar to <code>rename_as()</code> or <code>rename_as!()</code> except creating destination directory when not exist.</p>
+
+<h2>
+<a id="license-and-copyright" class="anchor" href="#license-and-copyright" aria-hidden="true"><span class="octicon octicon-link"></span></a>License and Copyright</h2>
+
+<p>$License: MIT License $</p>
+
+<p>$Copyright: copyright(c) 2015 kuwata-lab.com all rights reserved $</p>
+        </section>
+
+        <footer>
+          Gr8 is maintained by <a href="https://github.com/kwatch">kwatch</a><br>
+          This page was generated by <a href="https://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.
+        </footer>
+
+        
+      </div>
+    </div>
+  </body>
+</html>
