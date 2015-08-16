@@ -250,6 +250,7 @@ Options:
   -h, --help             : print help
   -v, --version          : print version
   -r, --require=lib[,lib2,...]  : require libraries
+  -F[regexp]             : separate each line into fields
   -C N                   : select column (1-origin)
 
 Example:
@@ -347,9 +348,11 @@ END
         $stderr.puts "ERROR (#{script_name()}): #{errmsg}"
         return 1
       end
-      #; [!vnwu6] if option '-C' specified, select colum.
-      if opts[:column]
-        $IN = EnumWrapper.new($stdin.lazy, nil, opts[:column])
+      #; [!8hk3g] option '-F': separates each line into array.
+      #; [!vnwu6] option '-C': select colum.
+      if opts[:separator] || opts[:column]
+        sep = opts[:separator]
+        $IN = EnumWrapper.new($stdin.lazy, sep == true ? nil : sep, opts[:column])
       else
         $IN = $stdin.lazy
         Util.define_singleton_methods_on($IN)
@@ -392,6 +395,15 @@ END
       parser.on("-h", "--help")    {|v| opts[:help]    = true }
       parser.on("-v", "--version") {|v| opts[:version] = true }
       parser.on("-r", "--require=libname") {|v| opts[:require] = v }
+      parser.on("-F[sep]") do |v|
+        #; [!jt4y5] option '-F': separator is omissible.
+        #; [!jo4gm] option '-F': error when invalid regular expression.
+        begin
+          opts[:separator] = v.nil? ? true : Regexp.new(v)
+        rescue RegexpError
+          raise invalid_argument_error(v, "invalid regular expression")
+        end
+      end
       #parser.on("-C N", Integer) {|v| opts[:column] = v }
       parser.on("-C N") do |v|
         #; [!7ruq0] option '-C': argument should be an integer.

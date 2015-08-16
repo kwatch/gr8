@@ -107,6 +107,37 @@ END
         ok {sout} == "true\n"
       end
 
+      spec "[!8hk3g] option '-F': separates each line into array." do
+        |app|
+        input_data = "A:10:x\n" + "B:20:y\n" + "C:30:z\n"
+        code = "map{|s| s.inspect }"
+        status = nil
+        sout, serr = dummy_io(input_data) { status = app.run("-F:", code) }
+        ok {sout} == %Q`["A", "10", "x"]\n["B", "20", "y"]\n["C", "30", "z"]\n`
+        ok {serr} == ""
+        ok {status} == 0
+      end
+
+      spec "[!jt4y5] option '-F': separator is omissible." do
+        |app, input_data|
+        code = "map{|s| s.inspect }"
+        status = nil
+        sout, serr = dummy_io(input_data) { status = app.run("-F", code) }
+        ok {sout} == %Q`["Haruhi", "100"]\n["Mikuru", "80"]\n["Yuki", "120"]\n`
+        ok {serr} == ""
+        ok {status} == 0
+      end
+
+      spec "[!jo4gm] option '-F': error when invalid regular expression." do
+        |app, input_data|
+        code = "map{|s| s.inspect }"
+        status = nil
+        sout, serr = dummy_io(input_data) { status = app.run("-F[a-}", code) }
+        ok {sout} == ""
+        ok {serr} == "#ERROR (gr8): invalid regular expression: -F[a-}\n"
+        ok {status} == 1
+      end
+
       spec "[!vnwu6] option '-C': select colum." do
         |app, input_data|
         code = "map{|s| s.inspect }"
