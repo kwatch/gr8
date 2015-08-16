@@ -431,8 +431,8 @@ END
       begin
         opts = parse_options(args)
       rescue ::OptionParser::ParseError => ex
-        #$stderr.puts "#ERROR (#{script_name()}): #{ex.args.is_a?(Array) ? ex.args.join(' ') : ex.args}: #{ex.reason}"
-        $stderr.puts "#ERROR (#{script_name()}): #{ex.message}"
+        #$stderr.puts "ERROR (#{script_name()}): #{ex.args.is_a?(Array) ? ex.args.join(' ') : ex.args}: #{ex.reason}"
+        $stderr.puts "ERROR (#{script_name()}): #{ex.message}"
         return 1
       end
       #

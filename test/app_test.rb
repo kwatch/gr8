@@ -168,7 +168,7 @@ END
         status = nil
         sout, serr = dummy_io(input_data) { status = app.run("-F[a-}", code) }
         ok {sout} == ""
-        ok {serr} == "#ERROR (gr8): invalid regular expression: -F[a-}\n"
+        ok {serr} == "ERROR (gr8): invalid regular expression: -F[a-}\n"
         ok {status} == 1
       end
 
@@ -186,7 +186,7 @@ END
         status = nil
         sout, serr = dummy_io(input_data) { status = app.run("-Cx", code) }
         ok {sout} == ""
-        ok {serr} == "#ERROR (gr8): integer expected: -Cx\n"
+        ok {serr} == "ERROR (gr8): integer expected: -Cx\n"
         ok {status} == 1
       end
 
@@ -196,7 +196,7 @@ END
         status = nil
         sout, serr = dummy_io(input_data) { status = app.run("-C0", code) }
         ok {sout} == ""
-        ok {serr} == "#ERROR (gr8): column number should be >= 1: -C0\n"
+        ok {serr} == "ERROR (gr8): column number should be >= 1: -C0\n"
         ok {status} == 1
       end
 
