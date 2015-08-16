@@ -78,19 +78,19 @@ module Enumerable
 
   def sum_i
     #; [!01ehd] returns sum of integers, converting values into integer.
-    inject(0) {|t, x| t += x.to_i }
+    inject(0) {|t, x| t + x.to_i }
   end
 
   def sum_f
     #; [!kplnt] returns sum of floats, converting values into float.
-    inject(0.0) {|t, x| t += x.to_i }
+    inject(0.0) {|t, x| t + x.to_i }
   end
 
   def avg
     #; [!pvi8h] returnns average of numbers.
     #; [!poidi] returns nil when no numbers.
     i = 0
-    sum = inject(0) {|t, n| i += 1; t += n }
+    sum = inject(0) {|t, n| i += 1; t + n }
     i == 0 ? nil : sum.to_f / i
   end
 
@@ -98,7 +98,7 @@ module Enumerable
     #; [!btiat] returns average of numbers, converting values into integer.
     #; [!892q9] returns nil when no numbers.
     i = 0
-    sum = inject(0) {|t, x| i += 1; t += x.to_i }
+    sum = inject(0) {|t, x| i += 1; t + x.to_i }
     i == 0 ? nil : sum.to_f / i
   end
 
@@ -106,7 +106,7 @@ module Enumerable
     #; [!oqpmc] returns average of numbers, converting values into float.
     #; [!9bckq] returns nil when no numbers.
     i = 0
-    sum = inject(0) {|t, x| i += 1; t += x.to_f }
+    sum = inject(0) {|t, x| i += 1; t + x.to_f }
     i == 0 ? nil : sum.to_f / i
   end
 
