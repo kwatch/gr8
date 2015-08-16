@@ -249,7 +249,7 @@ Usage:
 Options:
   -h, --help             : print help
   -v, --version          : print version
-  -r, --require=lib[,lib2,...]  : require libraries
+  -r lib[,lib2,...]      : require libraries
   -F[regexp]             : separate each line into fields
   -C N                   : select column (1-origin)
 
@@ -394,7 +394,7 @@ END
       parser = OptionParser.new
       parser.on("-h", "--help")    {|v| opts[:help]    = true }
       parser.on("-v", "--version") {|v| opts[:version] = true }
-      parser.on("-r", "--require=libname") {|v| opts[:require] = v }
+      parser.on("-r lib[,lib2,..]") {|v| opts[:require] = v }
       parser.on("-F[sep]") do |v|
         #; [!jt4y5] option '-F': separator is omissible.
         #; [!jo4gm] option '-F': error when invalid regular expression.
@@ -436,7 +436,7 @@ END
       if opts[:version]
         return VERSION
       end
-      #; [!1s7wm] requires libraries when '-r' or '--require' specified.
+      #; [!1s7wm] option '-r': requires libraries.
       if opts[:require]
         opts[:require].split(/,/).each do |libname|
           libname.strip!

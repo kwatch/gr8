@@ -66,7 +66,7 @@ END
         ok {status} == 0
       end
 
-      spec "[!1s7wm] requires libraries when '-r' or '--require' specified." do
+      spec "[!1s7wm] option '-r': requires libraries." do
         |app|
         ok {defined?(PStore)}     == nil
         ok {defined?(GetoptLong)} == nil
