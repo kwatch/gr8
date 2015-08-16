@@ -174,7 +174,8 @@ module Enumerable
           s1 = s + ""
           s1.object_id != s.object_id  or raise "** assertion failed"
           #; [!qqegl] file content and file path are passed to block argument.
-          s2 = yield s, fpath
+          #; [!d8dxv] make content as self in block argument.
+          s2 = s.instance_exec(s, fpath, &block)
           #; [!9g7re] edit file when content changed.
           if s1 != s2
             f.rewind()

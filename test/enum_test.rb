@@ -212,10 +212,12 @@ Oktest.scope do
       spec "[!ur9mj] opens file with utf-8 encoding." do
         |dummy_files|
         files = Dir.glob("_test.d/src/*.txt")
+        arr = []
         files.edit {|s|
-          ok {s.encoding.name} == "UTF-8"
+          arr << s.encoding.name
           s
         }
+        ok {arr} == ["UTF-8", "UTF-8"]
       end
 
       spec "[!qqegl] file content and file path are passed to block argument." do
@@ -224,6 +226,14 @@ Oktest.scope do
         arr = []
         files.edit {|s, fpath| arr << fpath }
         ok {arr} == files
+      end
+
+      spec "[!d8dxv] make content as self in block argument." do
+        |dummy_files|
+        files = Dir.glob("_test.d/src/*.txt")
+        arr = []
+        files.edit {|s| arr << (s.eql? self); s}
+        ok {arr} == [true, true]
       end
 
       spec "[!9g7re] edit file when content changed." do
