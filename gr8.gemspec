@@ -7,7 +7,7 @@ Gem::Specification.new do |o|
   o.author        = "makoto kuwata"
   o.email         = "kwa(at)kuwata-lab.com"
   o.platform      = Gem::Platform::RUBY
-  o.homepage      = "https://github.com/kwatch/gr8"
+  o.homepage      = "http://kwatch.github.io/gr8/"
   o.license       = "MIT Lisense"
   o.summary       = "Great command-line utility powered by Ruby"
   o.description   = <<'END'
@@ -32,7 +32,7 @@ Example:
     $ cat data | gr8s -C2 'sum_i'
     300
 
-See https://github.com/kwatch/gr8 for details.
+See http://kwatch.github.io/gr8/ for detail.
 END
 
   o.files         = Dir[*%w[
