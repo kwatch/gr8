@@ -361,6 +361,266 @@ Oktest.scope do
     end
 
 
+    topic '#rename_as()' do
+
+      spec "[!ignfm] block argument is required." do
+        |dummy_files|
+        files = Dir.glob("_test.d/src/*.txt")
+        pr = proc {files.rename_as("_test.d/lib/file.txt")}
+        ok {pr}.raise?(ArgumentError, "rename_as(): block argument required.")
+      end
+
+      spec "[!qqzqz] trims target file name." do
+        |dummy_files|
+        files = Dir.glob("_test.d/src/*.txt").map {|s| " #{s}\n"}
+        files.rename_as{sub(/src/, 'lib')}
+        ok {"_test.d/src/file1.txt"}.NOT.exist?
+        ok {"_test.d/src/file2.txt"}.NOT.exist?
+        ok {"_test.d/lib/file1.txt"}.file_exist?
+        ok {"_test.d/lib/file2.txt"}.file_exist?
+      end
+
+      spec "[!nnud9] destination file name is derived from source file name." do
+        |dummy_files|
+        files = Dir.glob("_test.d/src/*.txt")
+        files.rename_as{sub(/\.txt$/, '.tmp')}
+        ok {"_test.d/src/file1.txt"}.NOT.exist?
+        ok {"_test.d/src/file2.txt"}.NOT.exist?
+        ok {"_test.d/src/file1.tmp"}.file_exist?
+        ok {"_test.d/src/file2.tmp"}.file_exist?
+      end
+
+      spec "[!dkejf] if target directory name is nil or empty, skips renaming file." do
+        |dummy_files|
+        files = Dir.glob("_test.d/src/*.txt")
+        ret = files.rename_as{nil}
+        ok {ret} == [
+          "Skip: target file name is nil or empty (file: '_test.d/src/file1.txt')",
+          "Skip: target file name is nil or empty (file: '_test.d/src/file2.txt')",
+        ]
+        ok {"_test.d/src/file1.txt"}.file_exist?
+        ok {"_test.d/src/file2.txt"}.file_exist?
+        #
+        ret = files.rename_as{""}
+        ok {ret} == [
+          "Skip: target file name is nil or empty (file: '_test.d/src/file1.txt')",
+          "Skip: target file name is nil or empty (file: '_test.d/src/file2.txt')",
+        ]
+        ok {"_test.d/src/file1.txt"}.file_exist?
+        ok {"_test.d/src/file2.txt"}.file_exist?
+      end
+
+      spec "[!8ap57] if target file or directory already exists, skips renaming files." do
+        |dummy_files|
+        files = Dir.glob("_test.d/src/*.txt")
+        _write_file("_test.d/lib/file1.txt", "xxx")
+        _write_file("_test.d/lib/file2.txt", "yyy")
+        ret = files.rename_as {sub(/src/, 'lib')}
+        ok {ret} == [
+          "Skip: target file '_test.d/lib/file1.txt' already exists.",
+          "Skip: target file '_test.d/lib/file2.txt' already exists.",
+        ]
+        ok {"_test.d/src/file1.txt"}.file_exist?
+        ok {"_test.d/src/file2.txt"}.file_exist?
+        ok {"_test.d/lib/file1.txt"}.file_exist?
+        ok {"_test.d/lib/file2.txt"}.file_exist?
+      end
+
+      spec "[!qhlc8] if directory of target file already exists, renames file." do
+        |dummy_files|
+        files = Dir.glob("_test.d/src/*.txt")
+        ret = files.rename_as {sub(/src/, 'lib').sub(/\.txt/, '.tmp')}
+        ok {ret} == [
+          "Rename: '_test.d/src/file1.txt' => '_test.d/lib/file1.tmp'",
+          "Rename: '_test.d/src/file2.txt' => '_test.d/lib/file2.tmp'",
+        ]
+        ok {"_test.d/src/file1.txt"}.NOT.exist?
+        ok {"_test.d/src/file2.txt"}.NOT.exist?
+        ok {"_test.d/lib/file1.tmp"}.file_exist?
+        ok {"_test.d/lib/file2.tmp"}.file_exist?
+      end
+
+      spec "[!gg9w1] if directory of target file not exist, skips renaming files." do
+        |dummy_files|
+        files = Dir.glob("_test.d/src/*.txt")
+        ret = files.rename_as {sub(/src/, 'var')}
+        ok {ret} == [
+          "Skip: directory of target file '_test.d/var/file1.txt' not exist.",
+          "Skip: directory of target file '_test.d/var/file2.txt' not exist.",
+        ]
+        ok {"_test.d/src/file1.txt"}.file_exist?
+        ok {"_test.d/src/file2.txt"}.file_exist?
+        ok {"_test.d/var/file1.txt"}.NOT.exist?
+        ok {"_test.d/var/file2.txt"}.NOT.exist?
+      end
+
+      spec "[!vt24y] prints target file and destination directory when verbose mode." do
+        |dummy_files|
+        files = Dir.glob("_test.d/src/*.txt")
+        ret = files.rename_as {sub(/src/, 'lib').sub(/.txt/, '.tmp')}
+        ok {ret} == [
+          "Rename: '_test.d/src/file1.txt' => '_test.d/lib/file1.tmp'",
+          "Rename: '_test.d/src/file2.txt' => '_test.d/lib/file2.tmp'",
+        ]
+      end
+
+    end
+
+
+    topic '#rename_as!()' do
+
+      spec "[!ignfm] block argument is required." do
+        |dummy_files|
+        files = Dir.glob("_test.d/src/*.txt")
+        pr = proc {files.rename_as!("_test.d/lib/file.txt")}
+        ok {pr}.raise?(ArgumentError, "rename_as!(): block argument required.")
+      end
+
+      spec "[!qqzqz] trims target file name." do
+        skip_when true, "(common to rename_as())"
+      end
+
+      spec "[!nnud9] destination file name is derived from source file name." do
+        skip_when true, "(common to rename_as())"
+      end
+
+      spec "[!dkejf] if target directory name is nil or empty, skips renaming file." do
+        skip_when true, "(common to rename_as())"
+      end
+
+      spec "[!1yzjd] if target file or directory already exists, removes it before renaming file." do
+        |dummy_files|
+        files = Dir.glob("_test.d/src/*.txt")
+        _write_file("_test.d/lib/file1.txt", "xxx")
+        _write_file("_test.d/lib/file2.txt", "yyy")
+        ret = files.rename_as! {sub(/src/, 'lib')}
+        ok {ret} == [
+          "Rename!: '_test.d/src/file1.txt' => '_test.d/lib/file1.txt'",
+          "Rename!: '_test.d/src/file2.txt' => '_test.d/lib/file2.txt'",
+        ]
+        ok {"_test.d/src/file1.txt"}.NOT.exist?
+        ok {"_test.d/src/file2.txt"}.NOT.exist?
+        ok {"_test.d/lib/file1.txt"}.file_exist?
+        ok {"_test.d/lib/file2.txt"}.file_exist?
+      end
+
+      spec "[!qhlc8] if directory of target file already exists, renames file." do
+        skip_when true, "(common to rename_as())"
+      end
+
+      spec "[!gg9w1] if directory of target file not exist, skips renaming files." do
+        skip_when true, "(common to rename_as())"
+      end
+
+      spec "[!vt24y] prints target file and destination directory when verbose mode." do
+        skip_when true, "(common to rename_as())"
+      end
+
+      spec "[!gd9j9] use 'Rename!' instead of 'Rename' when overwriting existing file." do
+        |dummy_files|
+        files = Dir.glob("_test.d/src/*.txt")
+        _write_file("_test.d/lib/file1.txt", "xxx")
+        _write_file("_test.d/lib/file2.txt", "yyy")
+        ret = files.rename_as! {sub(/src/, 'lib')}
+        ok {ret} == [
+          "Rename!: '_test.d/src/file1.txt' => '_test.d/lib/file1.txt'",
+          "Rename!: '_test.d/src/file2.txt' => '_test.d/lib/file2.txt'",
+        ]
+      end
+
+    end
+
+
+    topic '#mkdir_and_rename_as()' do
+
+      spec "[!ignfm] block argument is required." do
+        |dummy_files|
+        files = Dir.glob("_test.d/src/*.txt")
+        pr = proc {files.mkdir_and_rename_as("_test.d/lib/file.txt")}
+        ok {pr}.raise?(ArgumentError, "mkdir_and_rename_as(): block argument required.")
+      end
+
+      spec "[!qqzqz] trims target file name." do
+        skip_when true, "(common to rename_as())"
+      end
+
+      spec "[!nnud9] destination file name is derived from source file name." do
+        skip_when true, "(common to rename_as())"
+      end
+
+      spec "[!dkejf] if target directory name is nil or empty, skips renaming file." do
+        skip_when true, "(common to rename_as())"
+      end
+
+      spec "[!8ap57] if target file or directory already exists, skips renaming files." do
+        skip_when true, "(common to rename_as())"
+      end
+
+      spec "[!qhlc8] if directory of target file already exists, renames file." do
+        skip_when true, "(common to rename_as())"
+      end
+
+      spec "[!sh2ti] if directory of target file not exist, creates it." do
+        |dummy_files|
+        files = Dir.glob("_test.d/src/*.txt")
+        ret = files.mkdir_and_rename_as {sub(/src/, 'var/tmp').sub(/\.txt/, '.tmp')}
+        ok {ret} == [
+          "Rename: '_test.d/src/file1.txt' => '_test.d/var/tmp/file1.tmp'",
+          "Rename: '_test.d/src/file2.txt' => '_test.d/var/tmp/file2.tmp'",
+        ]
+        ok {"_test.d/src/file1.txt"}.NOT.exist?
+        ok {"_test.d/src/file2.txt"}.NOT.exist?
+        ok {"_test.d/var/tmp/file1.tmp"}.file_exist?
+        ok {"_test.d/var/tmp/file2.tmp"}.file_exist?
+      end
+
+      spec "[!vt24y] prints source and destination file path when verbose mode." do
+        skip_when true, "(common to rename_as())"
+      end
+
+    end
+
+
+    topic '#mkdir_and_rename_as!()' do
+
+      spec "[!ignfm] block argument is required." do
+        |dummy_files|
+        files = Dir.glob("_test.d/src/*.txt")
+        pr = proc {files.mkdir_and_rename_as!("_test.d/lib/file.txt")}
+        ok {pr}.raise?(ArgumentError, "mkdir_and_rename_as!(): block argument required.")
+      end
+
+      spec "[!qqzqz] trims target file name." do
+        skip_when true, "(common to rename_as())"
+      end
+
+      spec "[!nnud9] destination file name is derived from source file name." do
+        skip_when true, "(common to rename_as())"
+      end
+
+      spec "[!dkejf] if target directory name is nil or empty, skips renaming file." do
+        skip_when true, "(common to rename_as())"
+      end
+
+      spec "[!1yzjd] if target file or directory already exists, removes it before renaming file." do
+        skip_when true, "(common to rename_as!())"
+      end
+
+      spec "[!qhlc8] if directory of target file already exists, renames file." do
+        skip_when true, "(common to rename_as())"
+      end
+
+      spec "[!sh2ti] if directory of target file not exist, creates it." do
+        skip_when true, "(common to mkdir_and_rename_as())"
+      end
+
+      spec "[!vt24y] prints source and destination file path when verbose mode." do
+        skip_when true, "(common to rename_as())"
+      end
+
+    end
+
+
   end
 
 

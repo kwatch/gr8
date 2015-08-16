@@ -169,6 +169,22 @@ module Enumerable
     __move_to("mkdir_and_move_to!", verbose, true, true, &block)
   end
 
+  def rename_as(verbose=true, &block)   #:experimental:
+    __rename_as("rename_as", verbose, false, false, &block)
+  end
+
+  def rename_as!(verbose=true, &block)   #:experimental:
+    __rename_as("rename_as!", verbose, true, false, &block)
+  end
+
+  def mkdir_and_rename_as(verbose=true, &block)   #:experimental:
+    __rename_as("mkdir_and_rename_as", verbose, false, true, &block)
+  end
+
+  def mkdir_and_rename_as!(verbose=true, &block)   #:experimental:
+    __rename_as("mkdir_and_rename_as!", verbose, true, true, &block)
+  end
+
   private
 
   def __move_to(meth, verbose, overwrite, mkdir, &block)
@@ -218,6 +234,60 @@ module Enumerable
           move = exist_p ? "Move!" : "Move"
           msg = "#{move}: '#{fpath}' => '#{dirpath}'" if verbose
         end
+      end
+      msg
+    }.reject {|s| s.nil? }
+  end
+
+  def __rename_as(meth, verbose, overwrite, mkdir, &block)
+    #; [!ignfm] block argument is required.
+    block  or
+      raise ArgumentError.new("#{meth}(): block argument required.")
+    require "fileutils" unless defined?(FileUtils)
+    existing = nil
+    collect {|fpath|
+      #; [!qqzqz] trims target file name.
+      fpath.strip!
+      #; [!nnud9] destination file name is derived from source file name.
+      new_fpath = fpath.instance_exec(fpath, &block)
+      #
+      overwritten = false
+      #; [!dkejf] if target directory name is nil or empty, skips renaming file.
+      if ! new_fpath || new_fpath.empty?
+        msg = "Skip: target file name is nil or empty (file: '#{fpath}')"
+      #
+      elsif File.exist?(new_fpath)
+        #; [!1yzjd] if target file or directory already exists, removes it before renaming file.
+        if overwrite
+          FileUtils.rm_rf(new_fpath)
+          overwritten = true
+          msg = nil
+        #; [!8ap57] if target file or directory already exists, skips renaming files.
+        else
+          msg = "Skip: target file '#{new_fpath}' already exists."
+        end
+      #
+      else
+        #; [!qhlc8] if directory of target file already exists, renames file.
+        dirpath = File.dirname(new_fpath)
+        if existing == dirpath || File.directory?(dirpath)
+          existing = dirpath
+          msg = nil
+        #; [!sh2ti] if directory of target file not exist, creates it.
+        elsif mkdir
+          FileUtils.mkdir_p(dirpath)
+          existing = dirpath
+          msg = nil
+        #; [!gg9w1] if directory of target file not exist, skips renaming files.
+        else
+          msg = "Skip: directory of target file '#{new_fpath}' not exist."
+        end
+      end
+      if msg.nil?
+        #; [!vt24y] prints source and destination file path when verbose mode.
+        #; [!gd9j9] use 'Rename!' instead of 'Rename' when overwriting existing file.
+        FileUtils.move(fpath, new_fpath)
+        msg = "Rename#{overwritten ? '!': ''}: '#{fpath}' => '#{new_fpath}'" if verbose
       end
       msg
     }.reject {|s| s.nil? }
