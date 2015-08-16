@@ -173,10 +173,7 @@ module Enumerable
           s = f.read()
           s1 = s + ""
           s1.object_id != s.object_id  or raise "** assertion failed"
-          #; [!l882z] file content passed to block argument when arity of it is 1.
-          #; [!gfcj5] file content and path are passed to block argument when arity of it is not 1.
           #; [!qqegl] file content and file path are passed to block argument.
-          #s2 = arity == 1 ? yield s : yield s, fpath
           s2 = yield s, fpath
           #; [!9g7re] edit file when content changed.
           if s1 != s2
