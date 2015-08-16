@@ -154,19 +154,19 @@ module Enumerable
   ## experimentals
 
   def move_to(verbose=true, &block)   #:experimental:
-    __move_to("move_to", verbose, false, false, &block)
+    __move_to(verbose, false, false, "move_to", &block)
   end
 
   def move_to!(verbose=true, &block)   #:experimental:
-    __move_to("move_to!", verbose, true, false, &block)
+    __move_to(verbose, true, false, "move_to!", &block)
   end
 
   def mkdir_and_move_to(verbose=true, &block)   #:experimental:
-    __move_to("mkdir_and_move_to", verbose, false, true, &block)
+    __move_to(verbose, false, true, "mkdir_and_move_to", &block)
   end
 
   def mkdir_and_move_to!(verbose=true, &block)   #:experimental:
-    __move_to("mkdir_and_move_to!", verbose, true, true, &block)
+    __move_to(verbose, true, true, "mkdir_and_move_to!", &block)
   end
 
   def rename_as(verbose=true, &block)   #:experimental:
@@ -203,7 +203,7 @@ module Enumerable
 
   private
 
-  def __move_to(meth, verbose_p, overwrite_p, mkdir_p, &block)
+  def __move_to(verbose_p, overwrite_p, mkdir_p, meth, &block)
     #; [!n0ubo] block argument is required.
     #; [!40se5] block argument is required.
     #; [!k74dw] block argument is required.
