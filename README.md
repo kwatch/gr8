@@ -448,7 +448,7 @@ Source code:
 
 ### Enumerable#edit(verbose=true, encodint='utf-8'){|content, filepath| ...}
 
-Edit file content.
+Replace file content with result of block argument.
 
 Example:
 
