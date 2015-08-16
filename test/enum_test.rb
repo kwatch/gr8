@@ -361,6 +361,40 @@ Oktest.scope do
     end
 
 
+    topic '#copy_to()' do
+
+      spec "[!fa5y0] copy files or directories into destination directory." do
+        |dummy_files|
+        files = Dir.glob("_test.d/src/*.txt")
+        ret = files.copy_to { "_test.d/lib" }
+        ok {ret} == [
+          "Copy: '_test.d/src/file1.txt' => '_test.d/lib'",
+          "Copy: '_test.d/src/file2.txt' => '_test.d/lib'",
+        ]
+        ok {"_test.d/src/file1.txt"}.file_exist?
+        ok {"_test.d/src/file2.txt"}.file_exist?
+        ok {"_test.d/lib/file1.txt"}.file_exist?
+        ok {"_test.d/lib/file2.txt"}.file_exist?
+      end
+
+    end
+
+
+    topic '#copy_to!()' do
+
+    end
+
+
+    topic '#mkdir_and_copy_to()' do
+
+    end
+
+
+    topic '#mkdir_and_copy_to!()' do
+
+    end
+
+
     topic '#rename_as()' do
 
       spec "[!ignfm] block argument is required." do

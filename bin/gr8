@@ -154,19 +154,35 @@ module Enumerable
   ## experimentals
 
   def move_to(verbose=true, &block)   #:experimental:
-    __move_to("Move", verbose, false, false, "move_to", &block)
+    __copy_or_move_to("Move", verbose, false, false, "move_to", &block)
   end
 
   def move_to!(verbose=true, &block)   #:experimental:
-    __move_to("Move", verbose, true, false, "move_to!", &block)
+    __copy_or_move_to("Move", verbose, true, false, "move_to!", &block)
   end
 
   def mkdir_and_move_to(verbose=true, &block)   #:experimental:
-    __move_to("Move", verbose, false, true, "mkdir_and_move_to", &block)
+    __copy_or_move_to("Move", verbose, false, true, "mkdir_and_move_to", &block)
   end
 
   def mkdir_and_move_to!(verbose=true, &block)   #:experimental:
-    __move_to("Move", verbose, true, true, "mkdir_and_move_to!", &block)
+    __copy_or_move_to("Move", verbose, true, true, "mkdir_and_move_to!", &block)
+  end
+
+  def copy_to(verbose=true, &block)   #:experimental:
+    __copy_or_move_to("Copy", verbose, false, false, "copy_to", &block)
+  end
+
+  def copy_to!(verbose=true, &block)   #:experimental:
+    __copy_or_move_to("Copy", verbose, true, false, "copy_to!", &block)
+  end
+
+  def mkdir_and_copy_to(verbose=true, &block)   #:experimental:
+    __copy_or_move_to("Copy", verbose, false, true, "mkdir_and_copy_to", &block)
+  end
+
+  def mkdir_and_copy_to!(verbose=true, &block)   #:experimental:
+    __copy_or_move_to("Copy", verbose, true, true, "mkdir_and_copy_to!", &block)
   end
 
   def rename_as(verbose=true, &block)   #:experimental:
@@ -203,7 +219,7 @@ module Enumerable
 
   private
 
-  def __move_to(action, verbose_p, overwrite_p, mkdir_p, meth, &block)
+  def __copy_or_move_to(action, verbose_p, overwrite_p, mkdir_p, meth, &block)
     #; [!n0ubo] block argument is required.
     #; [!40se5] block argument is required.
     #; [!k74dw] block argument is required.
@@ -243,7 +259,15 @@ module Enumerable
           msg = "Skip: destination file '#{new_fpath}' already exist."
         #; [!ebdqh] overwrite destination file even if it exists.
         else
-          File.rename(fpath, new_fpath)
+          #; [!fa5y0] copy files or directories into destination directory.
+          if action == "Copy"
+            FileUtils.cp_r(fpath, dirpath)
+          #; [!d9vxl] move files or directories into destination directory.
+          elsif action == "Move"
+            FileUtils.mv(fpath, dirpath)
+          else
+            raise "** unreachable"
+          end
           existing = dirpath
           #; [!n7a1q] prints target file and destination directory when verbose mode.
           #; [!itsh0] use 'Move!' instead of 'Move' when overwriting existing file.
