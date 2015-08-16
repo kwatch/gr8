@@ -83,7 +83,7 @@ module Enumerable
 
   def sum_f
     #; [!kplnt] returns sum of floats, converting values into float.
-    inject(0.0) {|t, x| t + x.to_i }
+    inject(0.0) {|t, x| t + x.to_f }
   end
 
   def avg

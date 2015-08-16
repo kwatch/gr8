@@ -73,8 +73,8 @@ Oktest.scope do
     topic '#sum_f()' do
 
       spec "[!kplnt] returns sum of floats, converting values into float." do
-        ok {["10.0", "20.0", "30.0"].sum_f} == 60.0
-        ok {["10.0", "20.0", "30.0"].sum_f}.is_a?(Float)
+        ok {["10.5", "20.5", "30.5"].sum_f} == 61.5
+        ok {["10.5", "20.5", "30.5"].sum_f}.is_a?(Float)
         ok {["10", "20", "30"].sum_f} == 60.0
         ok {["10", "20", "30"].sum_f}.is_a?(Float)
       end
