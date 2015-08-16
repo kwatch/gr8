@@ -151,19 +151,21 @@ module Enumerable
     end
   end
 
-  def move_to(verbose=true, &block)
+  ## experimentals
+
+  def move_to(verbose=true, &block)   #:experimental:
     __move_to("move_to", verbose, false, false, &block)
   end
 
-  def move_to!(verbose=true, &block)
+  def move_to!(verbose=true, &block)   #:experimental:
     __move_to("move_to!", verbose, true, false, &block)
   end
 
-  def mkdir_and_move_to(verbose=true, &block)
+  def mkdir_and_move_to(verbose=true, &block)   #:experimental:
     __move_to("mkdir_and_move_to", verbose, false, true, &block)
   end
 
-  def mkdir_and_move_to!(verbose=true, &block)
+  def mkdir_and_move_to!(verbose=true, &block)   #:experimental:
     __move_to("mkdir_and_move_to!", verbose, true, true, &block)
   end
 
