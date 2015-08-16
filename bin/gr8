@@ -12,6 +12,13 @@
 require "optparse"
 
 
+def fu
+  #; [!ktccp] returns FileUtils class object.
+  require "fileutils" unless defined?(FileUtils)
+  FileUtils
+end
+
+
 class String
 
   def q
@@ -41,13 +48,6 @@ class Object
     self
   end
 
-end
-
-
-def fu
-  #; [!ktccp] returns FileUtils class object.
-  require "fileutils" unless defined?(FileUtils)
-  FileUtils
 end
 
 
