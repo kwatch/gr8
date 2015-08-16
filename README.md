@@ -12,8 +12,7 @@ You can use gr8 instead of sed or awk.
 
 Or:
 
-    $ curl -O http://bit.ly/gr8_rb
-    $ mv gr8_rb gr8
+    $ curl -o gr8 http://bit.ly/gr8_rb
     $ chmod a+x gr8
     $ sudo mv gr8 /usr/local/bin
 
