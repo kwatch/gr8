@@ -14,6 +14,19 @@ require "oktest"
 Oktest.scope do
 
 
+  topic Kernel do
+
+    topic 'fu()' do
+
+      spec "[!ktccp] returns FileUtils class object." do
+        ok {fu} == FileUtils
+      end
+
+    end
+
+  end
+
+
   topic String do
 
 
@@ -54,19 +67,6 @@ Oktest.scope do
         s = "hom"
         ok {s}.same?(s)
         ok {s}.NOT.same?(s+"")
-      end
-
-    end
-
-  end
-
-
-  topic Kernel do
-
-    topic 'fu()' do
-
-      spec "[!ktccp] returns FileUtils class object." do
-        ok {fu} == FileUtils
       end
 
     end
