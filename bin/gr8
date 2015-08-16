@@ -151,6 +151,57 @@ module Enumerable
     end
   end
 
+  def edit(verbose=true, encoding='utf-8', &block)
+    edit_i(nil, verbose, encoding, &block)
+  end
+
+  def edit_i(suffix, verbose=true, encoding='utf-8', &block)
+    require "fileutils" unless defined?(FileUtils)
+    arity = block.arity
+    collect {|fpath|
+      fpath.strip!
+      msg = nil
+      if File.file?(fpath)
+        #; [!lpncu] creates backup file with suffix spedified.
+        if suffix && ! suffix.empty?
+          bkup_fpath = "#{fpath}#{suffix}"
+          FileUtils.mv(fpath, bkup_fpath)
+          FileUtils.cp(bkup_fpath, fpath)
+        end
+        #; [!ur9mj] opens file with utf-8 encoding.
+        File.open(fpath, 'r+', encoding: encoding) do |f|
+          s = f.read()
+          s1 = s + ""
+          s1.object_id != s.object_id  or raise "** assertion failed"
+          #; [!l882z] file content passed to block argument when arity of it is 1.
+          #; [!gfcj5] file content and path are passed to block argument when arity of it is not 1.
+          #; [!qqegl] file content and file path are passed to block argument.
+          #s2 = arity == 1 ? yield s : yield s, fpath
+          s2 = yield s, fpath
+          #; [!9g7re] edit file when content changed.
+          if s1 != s2
+            f.rewind()
+            f.truncate(0)
+            f.write(s2.to_s)
+            msg = "Edit: '#{fpath}'" if verbose
+          #; [!exzkz] don't edit file when content not changed.
+          else
+            msg = "NotChanged: '#{fpath}'" if verbose
+          end
+        end
+      else
+        #; [!k9d31] skips if file not exist.
+        #; [!6m49n] skips if file is not a file.
+        if ! File.exist?(fpath)
+          msg = "Skip: '#{fpath}' does not exist."
+        else
+          msg = "Skip: '#{fpath}' is not a file."
+        end
+      end
+      msg
+    }.reject {|x| x.nil? }
+  end
+
   ## experimentals
 
   def move_to(verbose=true, &block)   #:experimental:

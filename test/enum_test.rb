@@ -207,6 +207,104 @@ Oktest.scope do
     end
 
 
+    topic '#edit()' do
+
+      spec "[!ur9mj] opens file with utf-8 encoding." do
+        |dummy_files|
+        files = Dir.glob("_test.d/src/*.txt")
+        files.edit {|s|
+          ok {s.encoding.name} == "UTF-8"
+          s
+        }
+      end
+
+      spec "[!qqegl] file content and file path are passed to block argument." do
+        |dummy_files|
+        files = Dir.glob("_test.d/src/*.txt")
+        arr = []
+        files.edit {|s, fpath| arr << fpath }
+        ok {arr} == files
+      end
+
+      spec "[!9g7re] edit file when content changed." do
+        |dummy_files|
+        files = Dir.glob("_test.d/src/*.txt")
+        ret = files.edit {|s|
+          s << "-homhom\n"
+          s
+        }
+        ok {ret} == [
+          "Edit: '_test.d/src/file1.txt'",
+          "Edit: '_test.d/src/file2.txt'",
+        ]
+        ok {File.read("_test.d/src/file1.txt")} == "file1-homhom\n"
+        ok {File.read("_test.d/src/file2.txt")} == "file2-homhom\n"
+      end
+
+      spec "[!exzkz] don't edit file when content not changed." do
+        |dummy_files|
+        files = Dir.glob("_test.d/src/*.txt")
+        ret = files.edit {|s|
+          s
+        }
+        ok {ret} == [
+          "NotChanged: '_test.d/src/file1.txt'",
+          "NotChanged: '_test.d/src/file2.txt'",
+        ]
+        ok {File.read("_test.d/src/file1.txt")} == "file1"
+        ok {File.read("_test.d/src/file2.txt")} == "file2"
+      end
+
+      spec "[!k9d31] skips if file not exist." do
+        |dummy_files|
+        files = Dir.glob("_test.d/src/*.txt").map{|x| x.sub(/\.txt/, '.tmp')}
+        ret = files.edit {|s|
+          s << "hom\n"
+        }
+        ok {ret} == [
+          "Skip: '_test.d/src/file1.tmp' does not exist.",
+          "Skip: '_test.d/src/file2.tmp' does not exist.",
+        ]
+        ok {"_test.d/src/file1.tmp"}.NOT.exist?
+        ok {"_test.d/src/file2.tmp"}.NOT.exist?
+      end
+
+      spec "[!6m49n] skips if file is not a file." do
+        |dummy_files|
+        files = ["_test.d/src", "_test.d/lib"]
+        ret = files.edit {|s|
+          s << "hom\n"
+        }
+        ok {ret} == [
+          "Skip: '_test.d/src' is not a file.",
+          "Skip: '_test.d/lib' is not a file.",
+        ]
+      end
+
+    end
+
+
+    topic '#edit_i()' do
+
+      spec "[!lpncu] creates backup file with suffix spedified." do
+        |dummy_files|
+        files = Dir.glob("_test.d/src/*.txt")
+        ret = files.edit_i(".bkup") {|s|
+          s << "hom\n"
+        }
+        ok {ret} == [
+          "Edit: '_test.d/src/file1.txt'",
+          "Edit: '_test.d/src/file2.txt'",
+        ]
+        ok {"_test.d/src/file1.txt"}.file_exist?
+        ok {"_test.d/src/file2.txt"}.file_exist?
+        ok {"_test.d/src/file1.txt.bkup"}.file_exist?
+        ok {"_test.d/src/file2.txt.bkup"}.file_exist?
+      end
+
+    end
+
+
     topic '#move_to()' do
 
       spec "[!n0ubo] block argument is required." do
@@ -276,7 +374,10 @@ Oktest.scope do
         |dummy_files|
         Dir.rmdir("_test.d/lib")
         ret = Dir.glob("_test.d/src/*.txt").move_to {"_test.d/lib"}
-        ok {ret} == ["Skip: directory '_test.d/lib' not exist", "Skip: directory '_test.d/lib' not exist"]
+        ok {ret} == [
+          "Skip: directory '_test.d/lib' not exist",
+          "Skip: directory '_test.d/lib' not exist",
+        ]
       end
 
       spec "[!0gq9h] if destination file already exist, skip." do
