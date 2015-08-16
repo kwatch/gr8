@@ -170,19 +170,35 @@ module Enumerable
   end
 
   def rename_as(verbose=true, &block)   #:experimental:
-    __rename_as("rename_as", verbose, false, false, &block)
+    __copy_or_rename_as("Rename", "rename_as", verbose, false, false, &block)
   end
 
   def rename_as!(verbose=true, &block)   #:experimental:
-    __rename_as("rename_as!", verbose, true, false, &block)
+    __copy_or_rename_as("Rename", "rename_as!", verbose, true, false, &block)
   end
 
   def mkdir_and_rename_as(verbose=true, &block)   #:experimental:
-    __rename_as("mkdir_and_rename_as", verbose, false, true, &block)
+    __copy_or_rename_as("Rename", "mkdir_and_rename_as", verbose, false, true, &block)
   end
 
   def mkdir_and_rename_as!(verbose=true, &block)   #:experimental:
-    __rename_as("mkdir_and_rename_as!", verbose, true, true, &block)
+    __copy_or_rename_as("Rename", "mkdir_and_rename_as!", verbose, true, true, &block)
+  end
+
+  def copy_as(verbose=true, &block)   #:experimental:
+    __copy_or_rename_as("Copy", "copy_as", verbose, false, false, &block)
+  end
+
+  def copy_as!(verbose=true, &block)   #:experimental:
+    __copy_or_rename_as("Copy", "copy_as!", verbose, true, false, &block)
+  end
+
+  def mkdir_and_copy_as(verbose=true, &block)   #:experimental:
+    __copy_or_rename_as("Copy", "mkdir_and_copy_as", verbose, false, true, &block)
+  end
+
+  def mkdir_and_copy_as!(verbose=true, &block)   #:experimental:
+    __copy_or_rename_as("Copy", "mkdir_and_copy_as!", verbose, true, true, &block)
   end
 
   private
@@ -239,7 +255,7 @@ module Enumerable
     }.reject {|s| s.nil? }
   end
 
-  def __rename_as(meth, verbose, overwrite, mkdir, &block)
+  def __copy_or_rename_as(action, meth, verbose, overwrite, mkdir, &block)
     #; [!ignfm] block argument is required.
     block  or
       raise ArgumentError.new("#{meth}(): block argument required.")
@@ -284,10 +300,19 @@ module Enumerable
         end
       end
       if msg.nil?
+        #; [!0txp4] copy files or directories.
+        if action == "Copy"
+          FileUtils.cp_r(fpath, new_fpath)
+        #; [!xi8u5] rename files or directories.
+        elsif action == "Rename"
+          FileUtils.move(fpath, new_fpath)
+        else
+          raise "** unreachable"
+        end
         #; [!vt24y] prints source and destination file path when verbose mode.
         #; [!gd9j9] use 'Rename!' instead of 'Rename' when overwriting existing file.
-        FileUtils.move(fpath, new_fpath)
-        msg = "Rename#{overwritten ? '!': ''}: '#{fpath}' => '#{new_fpath}'" if verbose
+        #; [!8warb] use 'Copy!' instead of 'Copy' when overwriting exsiting file.
+        msg = "#{action}#{overwritten ? '!': ''}: '#{fpath}' => '#{new_fpath}'" if verbose
       end
       msg
     }.reject {|s| s.nil? }

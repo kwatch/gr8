@@ -621,6 +621,40 @@ Oktest.scope do
     end
 
 
+    topic '#copy_as()' do
+
+      spec "[!0txp4] copy files or directories." do
+        |dummy_files|
+        files = Dir.glob("_test.d/src/*.txt")
+        ret = files.copy_as { sub(/src/, 'lib').sub(/\.txt$/, '.tmp') }
+        ok {ret} == [
+          "Copy: '_test.d/src/file1.txt' => '_test.d/lib/file1.tmp'",
+          "Copy: '_test.d/src/file2.txt' => '_test.d/lib/file2.tmp'",
+        ]
+        ok {"_test.d/src/file1.txt"}.file_exist?
+        ok {"_test.d/src/file2.txt"}.file_exist?
+        ok {"_test.d/lib/file1.tmp"}.file_exist?
+        ok {"_test.d/lib/file2.tmp"}.file_exist?
+      end
+
+    end
+
+
+    topic '#copy_as!()' do
+
+    end
+
+
+    topic '#mkdir_and_copy_as()' do
+
+    end
+
+
+    topic '#mkdir_and_copy_as!()' do
+
+    end
+
+
   end
 
 
