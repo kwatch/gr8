@@ -45,7 +45,7 @@ task :release => [:test, :build] do
   dir = "build/gr8-#{ver}"
   gemfile = "gr8-#{ver}.gem"
   puts ""
-  print "** Are you sure to release #{gemfile}? [Y/n] "
+  print "** Are you sure to release #{gemfile}? [y/N] "
   answer = $stdin.gets()
   if answer =~ /\A[yY]/
     sh "git tag #{ver}"
