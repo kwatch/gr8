@@ -443,7 +443,7 @@ Example:
   $ cat data | %{script}s -C2 'sum_i'
   300
 
-See https://github.com/kwatch/gr8 for details.
+See http://kwatch.github.io/gr8/ for details.
 END
 
 
