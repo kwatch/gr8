@@ -414,7 +414,9 @@ module Gr8
 
   VERSION = "$Release: 0.0.0 $".split()[1]
 
-  HELP = <<'END'
+  WEBSITE_URL = "https://kwatch.github.io/gr8/"
+
+  HELP = <<"END"
 %{script} -- great command-line utility powered by Ruby
 
 Usage:
@@ -443,7 +445,7 @@ Example:
   $ cat data | %{script}s -C2 'sum_i'
   300
 
-See http://kwatch.github.io/gr8/ for details.
+See #{WEBSITE_URL} for details and examples.
 END
 
 
