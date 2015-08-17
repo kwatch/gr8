@@ -39,6 +39,26 @@ task :build do
 end
 
 
+desc "release preparation"
+task :release => [:test, :build] do
+  ver = _get_1st_argument(:build, "version")
+  dir = "build/gr8-#{ver}"
+  gemfile = "gr8-#{ver}.gem"
+  puts ""
+  print "** Are you sure to release #{gemfile}? [Y/n] "
+  answer = $stdin.gets()
+  if answer =~ /\A[yY]/
+    sh "git tag #{ver}"
+    sh "git push --tags"
+    Dir.chdir "build" do
+      sh "gem push #{gemfile}"
+    end
+  else
+    $stderr.puts "** Canceled."
+  end
+end
+
+
 ## helper functions
 
 def _get_1st_argument(task, argname="argument")
