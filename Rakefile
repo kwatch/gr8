@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-
 task :default => :test
+
 
 desc "run test scripts"
 task :test do
@@ -11,25 +11,18 @@ end
 
 desc "build gem file"
 task :build do
-  if ARGV.length == 1
-    raise ArgumentError.new("rake build: version required.")
-  end
-  ver = ARGV[1]
-  ARGV.slice(1, ARGV.size).each{|v| task(v.to_sym) { } }
-  require "rubygems"
-  require "fileutils"
-  spec = Gem::Specification::load("gr8.gemspec")
-  spec.files
-  #
-  ver = "0.1.0"
+  ver = _get_1st_argument(:build, "version")
   dir = "build/gr8-#{ver}"
-  FileUtils.rm_rf dir
+  rm_rf dir
+  #
+  spec = _load_gemspec_file("gr8.gemspec")
   spec.files.each do |fpath|
     new_fpath = "#{dir}/#{fpath}"
     dirpath = File.dirname(new_fpath)
-    FileUtils.mkdir_p dirpath unless File.exist?(dirpath)
-    FileUtils.cp fpath, new_fpath
+    mkdir_p dirpath unless File.exist?(dirpath)
+    cp fpath, new_fpath
   end
+  #
   Dir.chdir(dir) do
     spec.files.each do |fpath|
       _edit_file(fpath, ver) {|s|
@@ -39,9 +32,28 @@ task :build do
       }
     end
     sh "gem build gr8.gemspec"
-    FileUtils.mv "gr8-#{ver}.gem", ".."
+    mv "gr8-#{ver}.gem", ".."
   end
+  #
   puts "** created: #{dir}.gem"
+end
+
+
+## helper functions
+
+def _get_1st_argument(task, argname="argument")
+  if ARGV.length == 1
+    raise ArgumentError.new("rake #{task}: #{argname} required.")
+  end
+  arg = ARGV[1]
+  ARGV.slice(1, ARGV.length).each{|v| task(v.intern) { } }
+  return arg
+end
+
+def _load_gemspec_file(filename)
+  require "rubygems"
+  spec = Gem::Specification::load(filename)
+  return spec
 end
 
 def _edit_file(fpath, ver)
