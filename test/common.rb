@@ -10,6 +10,7 @@ $: << File.dirname(__FILE__)
 
 require "stringio"
 
+$DONT_RUN_GR8_APP = true
 unless defined?(Gr8)
   File.class_eval do
     load join(dirname(dirname(__FILE__)), "bin", "gr8")

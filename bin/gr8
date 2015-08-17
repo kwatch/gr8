@@ -630,6 +630,6 @@ END
 end
 
 
-if __FILE__ == $0
-  Gr8::App.new.main()
-end
+#if __FILE__ == $0
+  Gr8::App.new.main() unless $DONT_RUN_GR8_APP
+#end
