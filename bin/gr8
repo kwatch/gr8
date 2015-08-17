@@ -586,7 +586,7 @@ END
       end
       #; [!7dvjg] option '--doc': opens website with browser.
       if opts[:doc]
-        cmd = "open #{WEBSITE_URL}"
+        cmd = command_to_open_website()
         system cmd
         return cmd
       end
@@ -602,6 +602,14 @@ END
         end
       end
       nil
+    end
+
+    def command_to_open_website()
+      url = WEBSITE_URL
+      case RUBY_PLATFORM
+      when /darwin/   ; "open #{url}"
+      else            ; "open #{url}"   # or error?
+      end
     end
 
     def validate_args(args)
