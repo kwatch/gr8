@@ -49,6 +49,10 @@ END
         ok {status} == 0
       end
 
+      spec "[!7dvjg] option '--doc': opens website with browser." do
+        skip_when true, "hard to test"
+      end
+
       spec "[!2tfh5] option '-v', '--version': prints version string." do
         |app|
         expected = Gr8::VERSION + "\n"

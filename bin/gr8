@@ -424,6 +424,7 @@ Usage:
 
 Options:
   -h, --help             : print help
+      --doc              : (MacOSX) open document
   -v, --version          : print version
   -r lib[,lib2,...]      : require libraries
   -F[regexp]             : separate each line into fields
@@ -542,6 +543,7 @@ END
       opts = {}
       parser = OptionParser.new
       parser.on("-h", "--help")     {|v| opts[:help]    = true }
+      parser.on(      "--doc")      {|v| opts[:doc]     = true }
       parser.on("-v", "--version")  {|v| opts[:version] = true }
       parser.on("-r lib[,lib2,..]") {|v| opts[:require] = v }
       parser.on("-F[sep]") do |v|
@@ -581,6 +583,12 @@ END
       #; [!33bj3] option '-h', '--help': prints help message.
       if opts[:help]
         return HELP % {script: script_name()}
+      end
+      #; [!7dvjg] option '--doc': opens website with browser.
+      if opts[:doc]
+        cmd = "open #{WEBSITE_URL}"
+        system cmd
+        return cmd
       end
       #; [!2tfh5] option '-v', '--version': prints version string.
       if opts[:version]
