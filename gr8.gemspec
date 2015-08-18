@@ -3,7 +3,7 @@
 
 Gem::Specification.new do |o|
   o.name          = "gr8"
-  o.version       = "$Release: 0.0.0 $".split[1]
+  o.version       = "$Release: 0.1.1 $".split[1]
   o.author        = "makoto kuwata"
   o.email         = "kwa(at)kuwata-lab.com"
   o.platform      = Gem::Platform::RUBY

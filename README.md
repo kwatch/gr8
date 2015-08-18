@@ -1,6 +1,6 @@
 # gr8 README
 
-(Release: $Release: 0.0.0 $)
+(Release: $Release: 0.1.1 $)
 
 gr8 (pronounce as _greight_ or _great_) is a great command-line utility powered by Ruby.
 You can use gr8 instead of sed or awk.
