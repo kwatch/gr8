@@ -36,8 +36,14 @@ namespace :release do
 
 
   desc "edit files to set release number"
-  task :edit => [:test] do
+  task :edit do
     ver = _get_1st_argument(:build, "version")
+    curr_branch = `git branch --contains=HEAD`.split()[1]
+    curr_branch =~ /(\d+\.\d+)$/  or
+      raise ArgumentError.new("ERROR: current branch (#{curr_branch}) seems non-release branch.")
+    branch_num = $1
+    ver.start_with?(branch_num)  or
+      raise ArgumentError.new("ERROR: version '#{ver}' not match to branch ('#{curr_branch}).")
     spec = _load_gemspec_file("gr8.gemspec")
     spec.files.each do |fpath|
       _edit_file(fpath, ver) {|s|
@@ -46,12 +52,19 @@ namespace :release do
         s
       }
     end
+    puts ""
+    puts "Finished."
+    puts ""
+    push "Next action:"
+    push "  $ git commit -a -m 'ruby: release preparation for #{ver}.'"
+    push "  $ rake release:publish"
   end
 
 
   desc "upload gem file to rubygems.org"
   task :publish => [:test] do
-    ver = _get_1st_argument(:build, "version")
+    spec = _load_gemspec_file("gr8.gemspec")
+    ver = spec.version
     gemfile = "gr8-#{ver}.gem"
     puts ""
     print "** Are you sure to publish #{ver}? [y/N] "
@@ -59,6 +72,8 @@ namespace :release do
     if answer =~ /\A[yY]/
       Rake::Task[:build].invoke
       sh "git tag ruby-#{ver}"
+      sh "git tag -d ruby-current"
+      sh "git tag ruby-current"
       sh "git push --tags"
       Dir.chdir "build" do
         sh "gem push #{gemfile}"
