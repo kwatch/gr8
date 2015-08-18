@@ -11,11 +11,11 @@ end
 
 desc "build gem file"
 task :build do
-  ver = _get_1st_argument(:build, "version")
+  spec = _load_gemspec_file("gr8.gemspec")
+  ver = spec.version
   dir = "build/gr8-#{ver}"
   rm_rf dir
   #
-  spec = _load_gemspec_file("gr8.gemspec")
   spec.files.each do |fpath|
     new_fpath = "#{dir}/#{fpath}"
     dirpath = File.dirname(new_fpath)
@@ -24,13 +24,6 @@ task :build do
   end
   #
   Dir.chdir(dir) do
-    spec.files.each do |fpath|
-      _edit_file(fpath, ver) {|s|
-        s.gsub!(/\$[R]elease:.*?\$/, "$\Release: #{ver} $")
-        s.gsub!(/\$[R]elease\$/,     "$\Release: #{ver} $")
-        s
-      }
-    end
     sh "gem build gr8.gemspec"
     mv "gr8-#{ver}.gem", ".."
   end
