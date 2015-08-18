@@ -9,28 +9,10 @@ Gem::Specification.new do |o|
   o.platform      = Gem::Platform::RUBY
   o.homepage      = "http://kwatch.github.io/gr8/"
   o.license       = "MIT Lisense"
-  o.summary       = "Great command-line utility powered by Ruby"
+  o.summary       = "Brings Ruby power to your command-line"
   o.description   = <<'END'
-gr8 is a great command-line utility powered by Ruby.
-
-Example:
-
-    $ cat data
-    Haruhi   100
-    Mikuru    80
-    Yuki     120
-    $ cat data | gr8s 'map{|s|s.split()[1]}'
-    100
-    80
-    120
-    $ cat data | gr8s 'map{|s|s.split()[1]}.map(&:to_i).sum'
-    300
-    $ cat data | gr8s 'map{split[1]}.sum_i'
-    300
-    $ cat data | gr8s -F 'map{self[1]}.sum_i'
-    300
-    $ cat data | gr8s -C2 'sum_i'
-    300
+Gr8 brings Ruby power (such as map, select, inject, grep, min, max, ...)
+to your command line. Great.
 
 See http://kwatch.github.io/gr8/ for detail.
 END
