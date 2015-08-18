@@ -58,12 +58,14 @@ namespace :release do
 
   desc "upload gem file to rubygems.org"
   task :publish => [:test] do
+    ver = _get_1st_argument(:build, "version")
+    gemfile = "gr8-#{ver}.gem"
     puts ""
-    print "** Are you sure to release #{gemfile}? [y/N] "
+    print "** Are you sure to publish #{ver}? [y/N] "
     answer = $stdin.gets()
     if answer =~ /\A[yY]/
-      Rake[:build].invoke
-      sh "git tag #{ver}"
+      Rake::Task[:build].invoke
+      sh "git tag ruby-#{ver}"
       sh "git push --tags"
       Dir.chdir "build" do
         sh "gem push #{gemfile}"
