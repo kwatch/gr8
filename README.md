@@ -438,14 +438,14 @@ Example:
 
 Source code:
 
-  def paths(&block)
-    require "pathname" unless defined?(Pathname)
-    if block_given?
-      collect {|s| x = Pathname(s); x.instance_exec(x, &block) }
-    else
-      collect {|s| Pathname(s) }
+    def paths(&block)
+      require "pathname" unless defined?(Pathname)
+      if block_given?
+        collect {|s| x = Pathname(s); x.instance_exec(x, &block) }
+      else
+        collect {|s| Pathname(s) }
+      end
     end
-  end
 
 
 ### Enumerable#edit(verbose=true, encodint='utf-8'){|content, filepath| ...}
