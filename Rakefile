@@ -39,15 +39,27 @@ task :build do
 end
 
 
-desc "release preparation"
-task :release => [:test, :build] do
+desc "edit files to set release number"
+task :edit => [:test] do
   ver = _get_1st_argument(:build, "version")
-  dir = "build/gr8-#{ver}"
-  gemfile = "gr8-#{ver}.gem"
+  spec = _load_gemspec_file("gr8.gemspec")
+  spec.files.each do |fpath|
+    _edit_file(fpath, ver) {|s|
+      s.gsub!(/\$[R]elease:.*?\$/, "$\Release: #{ver} $")
+      s.gsub!(/\$[R]elease\$/,     "$\Release: #{ver} $")
+      s
+    }
+  end
+end
+
+
+desc "upload gem file to rubygems.org"
+task :publish => [:test] do
   puts ""
   print "** Are you sure to release #{gemfile}? [y/N] "
   answer = $stdin.gets()
   if answer =~ /\A[yY]/
+    Rake[:build].invoke
     sh "git tag #{ver}"
     sh "git push --tags"
     Dir.chdir "build" do
