@@ -435,15 +435,15 @@ Example:
   Haruhi   100
   Mikuru    80
   Yuki     120
-  $ cat data | %{script}s 'map{|s| s.split()[1]}'      ## self == $stdin.lazy
+  $ cat data | %{script} 'map{|s| s.split()[1]}'      ## self == $stdin.lazy
   100
   80
   120
-  $ cat data | %{script}s 'map{split()[1].to_i}.sum'   ## map{self} == map{|s| s}
+  $ cat data | %{script} 'map{split()[1].to_i}.sum'   ## map{self} == map{|s| s}
   300
-  $ cat data | %{script}s 'map{split[1]}.sum_i'        ## .sum_i == map(&:to_i).sum
+  $ cat data | %{script} 'map{split[1]}.sum_i'        ## .sum_i == map(&:to_i).sum
   300
-  $ cat data | %{script}s -C2 'sum_i'                  ## -C2 == map{split[1]}
+  $ cat data | %{script} -C2 'sum_i'                  ## -C2 == map{split[1]}
   300
 
 See #{WEBSITE_URL} for details and examples.
