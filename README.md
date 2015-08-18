@@ -2,8 +2,8 @@
 
 (Release: $Release: 0.0.0 $)
 
-gr8 (pronounce as _greight_ or _great_) is a great command-line utility powered by Ruby.
-You can use gr8 instead of sed or awk.
+Gr8 (pronouce same as _great_) is a great utility which brings Ruby power into command-line.
+Using Gr8, you can use map, select, inject, grep, max, min, ... in your command-line.
 
 
 ## Installation
