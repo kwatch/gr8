@@ -519,15 +519,15 @@ test: directory
 
 <p>Source code:</p>
 
-<p>def paths(&amp;block)
-    require "pathname" unless defined?(Pathname)
-    if block_given?
-      collect {|s| x = Pathname(s); x.instance_exec(x, &amp;block) }
-    else
-      collect {|s| Pathname(s) }
-    end
-  end</p>
-
+<pre><code>def paths(&amp;block)
+  require "pathname" unless defined?(Pathname)
+  if block_given?
+    collect {|s| x = Pathname(s); x.instance_exec(x, &amp;block) }
+  else
+    collect {|s| Pathname(s) }
+  end
+end
+</code></pre>
 
 <h3>
 <a id="enumerableedit-verbose-encoding" class="anchor" href="#enumerableedit-verbose-encoding" aria-hidden="true"><span class="octicon octicon-link"></span></a>Enumerable#edit(verbose=true, encoding='utf-8'){|content, filepath|...}</h3>
