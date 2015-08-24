@@ -375,9 +375,9 @@ Example:
     B.png
     C.png
     $ ls *.png | gr8 'sed(/png/, "jpg")'
-    A.png
-    B.png
-    C.png
+    A.jpg
+    B.jpg
+    C.jpg
 
 Source code:
 
